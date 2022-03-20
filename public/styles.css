@@ -1,0 +1,119 @@
+* {
+  font-family: 'Fredoka', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+html, body{
+  min-height: 100%;
+}
+
+#root {
+  position: absolute;
+  inset: 0;
+}
+
+#root > div {
+  height: 100%;
+}
+
+nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgb(90, 143, 142);
+  height: 80px;
+  font-family: Raleway;
+  font-weight: 800;
+  font-size: 32px;
+  color: white;
+  border-bottom: 10px solid rgb(70, 123, 122);
+}
+
+.monthContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.dateCells {
+  display: inline-flex;
+  flex-direction: column;
+}
+
+.row {
+  display: inline-flex;
+}
+
+.spacer {
+  border: 1px solid lightgrey;
+}
+
+.date {
+  border: 1px solid black;
+}
+
+.slot {
+  width: 85px;
+  /* height: 85px; */
+  display: inline-flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.slot img {
+  width: 100%;
+}
+
+.di-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+  margin-top: -90px;
+}
+
+.di-container .row {
+  margin-bottom: 30px;
+  min-width: 55%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.di-container .col {
+  margin-right: 20px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.di-container .col > span {
+  width: 30%;
+}
+
+#submit-date-btn {
+  width: 150px;
+  height: 50px;
+  background: #d19def;
+  border: 3px solid #ae85c5;
+  border-radius: 15px;
+  color: white;
+  font-weight: bold;
+  font-size: larger;
+}
+
+#submit-date-btn:focus {
+  box-shadow: 0px 1px 11px 0px #a25ccc;
+}
+
+#submit-date-btn:active {
+  box-shadow: inset 4px 4px 11px 0px #a25ccc;
+}
+
+.di-container input {
+  padding: 5px;
+  border-radius: 8px;
+  border: 1px solid gray;
+}
