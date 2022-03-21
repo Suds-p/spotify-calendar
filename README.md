@@ -1,5 +1,5 @@
 # Spotify Calendar (Cal)
-One my of my children that I'm still currently gestating.
+One of my children that I'm still currently gestating.
 This project aims to present a calendar view of the most listened to songs on a user's Spotify for as long as they've been listening. Primary function of this README is to be a todo list really so don't expect much explanation here.
 
 ### Todos:
