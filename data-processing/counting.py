@@ -39,7 +39,8 @@ build_daily_song_map:
 def build_daily_song_map(df):
   g = df.groupby(["play-date", "master_metadata_track_name"]).agg(
     artist=pd.NamedAgg(column="master_metadata_album_artist_name", aggfunc=max),
-    count=pd.NamedAgg(column="count", aggfunc=sum))
+    count=pd.NamedAgg(column="count", aggfunc=sum),
+    track_uri=pd.NamedAgg(column="spotify_track_uri", aggfunc=max))
   g.reset_index(inplace=True)
   result = g.loc[g.groupby(["play-date"]).idxmax()['count']]
   result.set_index('play-date', inplace=True)
@@ -55,7 +56,7 @@ def find_all_daily_songs():
   global main_df
   if main_df is None:
     main_df = build_daily_song_map(create_dataframe())
-  return main_df.to_json(orient="index")
+  return main_df.to_json(orient="columns")
 
 
 """
@@ -67,7 +68,6 @@ def find_range_daily_songs(start_date, end_date):
   global main_df
   if main_df is None:
     main_df = build_daily_song_map(create_dataframe())
-  return main_df[(start_date <= main_df.index) & (main_df.index <= end_date)]
-
-print(find_range_daily_songs("2017-04-20", "2017-05-10"))
-# print(create_dataframe())
+  return main_df[
+    (start_date <= main_df.index) & (main_df.index <= end_date)
+  ].to_json(orient="columns")

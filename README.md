@@ -37,3 +37,7 @@ This project aims to present a calendar view of the most listened to songs on a 
 - March 20, 2022 - We're learning so much about big data here.
   - Improved build_daily_song_map runtimes again, now at 8 secs for a 98% reduction.
   - Learned how to use idxmax() (index max) to get positions for songs with max numbers.
+  - We're on GitHub now!!
+- March 21, 2022 - Attempting to tie back + frontends together.
+  - Command to run flask program is just "flask run". File should always be app.py.
+  - Command to run node server is just "npm run devStart".

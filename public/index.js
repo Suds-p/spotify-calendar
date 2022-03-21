@@ -20501,16 +20501,10 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   };
   function getMonthRange(y1, m1, y2, m2) {
     let range = [[y1.toString(), m1.toString().padStart(2, "0")]];
-    let x = 0;
     while (y1 !== y2 || m1 !== m2) {
       m1 = m1 === 12 ? 1 : m1 + 1;
       y1 = m1 === 1 ? y1 + 1 : y1;
       range.push([y1.toString(), m1.toString().padStart(2, "0")]);
-      x++;
-      if (x > 10) {
-        console.log("too many iterations, gonna fail");
-        break;
-      }
     }
     return range;
   }
