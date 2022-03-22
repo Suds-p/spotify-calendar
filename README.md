@@ -7,13 +7,14 @@ This project aims to present a calendar view of the most listened to songs on a 
 1. ~~Render multiple months within a certain date range~~
 2. ~~Add initial screen to ask for date range~~
 3. ~~Actually switch from initial to calendar screen~~
-4. Change own API to return more info on songs (name, artist, # of listens, etc.)
-4.5 Make build_song_map() a heckin' lot more efficient, por favor.
+4. ~~Change own API to return more info on songs (name, artist, # of listens, etc.)~~
+4.5 ~~Make build_song_map() a heckin' lot more efficient, por favor.~~
 5. Show more info on hover
 6. Add some way for user to import Spotify data
 7. Process user data to get most listened songs
 8. Loading screen?
 9. Maybe add error handling for Python in case data files don't exist.
+10. Move Spotify API code to Python (if possible) so album URLs get pulled in one place.
 
 ### Progress
 - March 15, 2022 - Started project. Pulled album covers from track IDs.
@@ -41,3 +42,4 @@ This project aims to present a calendar view of the most listened to songs on a 
 - March 21, 2022 - Attempting to tie back + frontends together.
   - Command to run flask program is just "flask run". File should always be app.py.
   - Command to run node server is just "npm run devStart".
+  - JSON now successfully transfers from Python to JS side.
