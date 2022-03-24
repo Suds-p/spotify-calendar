@@ -9,6 +9,7 @@ This project aims to present a calendar view of the most listened to songs on a 
 3. ~~Actually switch from initial to calendar screen~~
 4. ~~Change own API to return more info on songs (name, artist, # of listens, etc.)~~
 4.5 ~~Make build_song_map() a heckin' lot more efficient, por favor.~~
+4.6 Add caching to backend to prevent high API call frequency.
 5. Show more info on hover
 6. Add some way for user to import Spotify data
 7. Process user data to get most listened songs
@@ -43,3 +44,8 @@ This project aims to present a calendar view of the most listened to songs on a 
   - Command to run flask program is just "flask run". File should always be app.py.
   - Command to run node server is just "npm run devStart".
   - JSON now successfully transfers from Python to JS side.
+- March 23, 2022 - Learned more about using React correctly.
+  - Changed Calendar to be class component with state so incoming API responses are stored.
+  - Tweaked backend to send data in right format
+  - Lifecycle methods are very helpful.
+  - Realized app should probably be caching URLs to avoid high API call rates.
