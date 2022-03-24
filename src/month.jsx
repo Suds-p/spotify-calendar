@@ -7,10 +7,10 @@ const monthNames = ["", "January", "February", "March", "April", "May", "June",
 /**
  * View for an entire calendar month with cells for each date.
  * 
- * @param props: should have {year, month} as strings.
+ * @param props: should have {year, month} as strings and viewData as song data object.
  */
 let MonthView = (props) => {
-  const { year, month } = props;
+  const { year, month, viewData } = props;
   let d = new Date(year, month, 0);
   let days = d.getDate();
 
@@ -31,9 +31,14 @@ let MonthView = (props) => {
       <div className="dateCells">{
         week_groups.map((week, i) => (
           <div className="row" key={i}>{
-            week.map((date, j) => 
-              <MonthCell dateString={`${year}-${month}-${date}`} isSpacer={date == 0} key={j}/>
-            )
+            week.map((date, j) => {
+              let key = `${year}-${month}-${date}`
+              return <MonthCell
+                dateString={key}
+                isSpacer={date == 0}
+                viewData={viewData && viewData[key]}
+                key={j}/>
+            })
           }</div>)
         )
       }</div>
@@ -55,15 +60,29 @@ let MonthHeader = (props) => {
  * 
  * @param props: should have { dateString, isSpacer } as a string and boolean.
  * Example of dateString is "2021-06".
+ * Example viewData is {
+ *  "2017-04-01": {
+ *    "song": "100 Bad Days",
+ *    "artist": "AJR",
+ *    "count": 128,
+ *    "track_uri": "3473495734",
+ *    "album_url": "https://image-url.com/path-to-image.png"
+ *  },
+ *  "2017-04-02": {...song data...},
+ * }
  */
 let MonthCell = (props) => {
-  const { dateString, isSpacer } = props;
+  const { dateString, isSpacer, viewData } = props;
   const cellClass = isSpacer ? "spacer" : "date";
+
+  const imgSrc  = isSpacer ? "" :
+    (viewData && viewData.album_url) ? viewData.album_url :
+    "https://place-hold.it/100"
 
   return (
     <div id={dateString} className={"slot " + cellClass}>
       {isSpacer ? "" : dateString.split('-')[2]}
-      <img src={isSpacer ? "" : "https://place-hold.it/100"}/>
+      <img src={imgSrc}/>
     </div>
   );
 }

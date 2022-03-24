@@ -26,6 +26,5 @@ def range_common_tracks():
     return Response(f"Start comes after end date ({start}, {end})", 400)
   
   result = find_range_daily_songs(start, end)
-  print(f"Type of range result is: {type(result)}")
   return result
   # return f"Congrats, your dates were successfully received! ({start}, {end})"

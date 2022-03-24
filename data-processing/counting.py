@@ -56,7 +56,7 @@ def find_all_daily_songs():
   global main_df
   if main_df is None:
     main_df = build_daily_song_map(create_dataframe())
-  return main_df.to_json(orient="columns")
+  return main_df.to_json(orient="index")
 
 
 """
@@ -70,4 +70,4 @@ def find_range_daily_songs(start_date, end_date):
     main_df = build_daily_song_map(create_dataframe())
   return main_df[
     (start_date <= main_df.index) & (main_df.index <= end_date)
-  ].to_json(orient="columns")
+  ].to_json(orient="index")

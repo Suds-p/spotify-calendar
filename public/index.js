@@ -1041,7 +1041,7 @@
             }
             return dispatcher.useContext(Context, unstable_observedBits);
           }
-          function useState2(initialState) {
+          function useState3(initialState) {
             var dispatcher = resolveDispatcher();
             return dispatcher.useState(initialState);
           }
@@ -1053,7 +1053,7 @@
             var dispatcher = resolveDispatcher();
             return dispatcher.useRef(initialValue);
           }
-          function useEffect(create, deps) {
+          function useEffect2(create, deps) {
             var dispatcher = resolveDispatcher();
             return dispatcher.useEffect(create, deps);
           }
@@ -1623,13 +1623,13 @@
           exports.useCallback = useCallback;
           exports.useContext = useContext;
           exports.useDebugValue = useDebugValue;
-          exports.useEffect = useEffect;
+          exports.useEffect = useEffect2;
           exports.useImperativeHandle = useImperativeHandle;
           exports.useLayoutEffect = useLayoutEffect;
           exports.useMemo = useMemo;
           exports.useReducer = useReducer;
           exports.useRef = useRef;
-          exports.useState = useState2;
+          exports.useState = useState3;
           exports.version = ReactVersion;
         })();
       }
@@ -20448,7 +20448,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     "December"
   ];
   var MonthView = (props) => {
-    const { year, month } = props;
+    const { year, month, viewData } = props;
     let d = new Date(year, month, 0);
     let days = d.getDate();
     d.setDate(1);
@@ -20458,6 +20458,8 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     while (ns.length > 0) {
       week_groups.push(ns.splice(0, 7));
     }
+    console.log(">>> view data in month:");
+    console.log(viewData);
     return /* @__PURE__ */ import_react2.default.createElement("div", {
       className: "monthContainer"
     }, /* @__PURE__ */ import_react2.default.createElement(MonthHeader, {
@@ -20468,36 +20470,63 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     }, week_groups.map((week, i) => /* @__PURE__ */ import_react2.default.createElement("div", {
       className: "row",
       key: i
-    }, week.map((date, j) => /* @__PURE__ */ import_react2.default.createElement(MonthCell, {
-      dateString: `${year}-${month}-${date}`,
-      isSpacer: date == 0,
-      key: j
-    }))))));
+    }, week.map((date, j) => {
+      let key = `${year}-${month}-${date}`;
+      return /* @__PURE__ */ import_react2.default.createElement(MonthCell, {
+        dateString: key,
+        isSpacer: date == 0,
+        viewData: viewData && viewData[key],
+        key: j
+      });
+    })))));
   };
   var MonthHeader = (props) => {
     return /* @__PURE__ */ import_react2.default.createElement("h2", null, monthNames[+props.month], " ", props.year);
   };
   var MonthCell = (props) => {
-    const { dateString, isSpacer } = props;
+    const { dateString, isSpacer, viewData } = props;
     const cellClass = isSpacer ? "spacer" : "date";
+    const imgSrc = isSpacer ? "" : viewData && viewData.album_url ? viewData.album_url : "https://place-hold.it/100";
     return /* @__PURE__ */ import_react2.default.createElement("div", {
       id: dateString,
       className: "slot " + cellClass
     }, isSpacer ? "" : dateString.split("-")[2], /* @__PURE__ */ import_react2.default.createElement("img", {
-      src: isSpacer ? "" : "https://place-hold.it/100"
+      src: imgSrc
     }));
   };
   var month_default = MonthView;
 
   // src/calendar.jsx
-  var CalendarScreen = (props) => {
-    let { startYear, startMonth, endYear, endMonth } = props;
-    const mRange = getMonthRange(startYear, startMonth, endYear, endMonth);
-    return /* @__PURE__ */ import_react3.default.createElement("main", null, mRange.map((dateInfo) => /* @__PURE__ */ import_react3.default.createElement(month_default, {
-      year: dateInfo[0],
-      month: dateInfo[1],
-      key: dateInfo[1]
-    })));
+  var CalendarScreen = class extends import_react3.default.Component {
+    constructor(props) {
+      super(props);
+      let { startYear, startMonth, endYear, endMonth } = this.props;
+      this.mRange = getMonthRange(startYear, startMonth, endYear, endMonth);
+      this.state = {};
+    }
+    componentDidMount() {
+      let tempState = {};
+      this.mRange.map((x) => tempState[x[0] + "-" + x[1]] = { "meep": "moop" });
+      let keys = Object.keys(tempState);
+      Promise.all(this.mRange.map((info) => {
+        let [date1, date2] = [`${info[0]}-${info[1]}-01`, `${info[0]}-${info[1]}-31`];
+        return new Promise((res, rej) => {
+          fetch(`http://localhost:5500/tracks?start=${date1}&end=${date2}`).then((resp) => resp.json()).then((data) => res(data));
+        });
+      })).then((results) => {
+        keys.map((k, i) => tempState[k] = results[i]);
+        console.log(tempState);
+        this.setState(tempState);
+      });
+    }
+    render() {
+      return /* @__PURE__ */ import_react3.default.createElement("main", null, this.mRange.map((info) => /* @__PURE__ */ import_react3.default.createElement(month_default, {
+        year: info[0],
+        month: info[1],
+        key: info[1],
+        viewData: this.state[info[0] + "-" + info[1]]
+      })));
+    }
   };
   function getMonthRange(y1, m1, y2, m2) {
     let range = [[y1.toString(), m1.toString().padStart(2, "0")]];
@@ -20595,7 +20624,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   }
 
   // src/index.jsx
-  import_react_dom.default.render(/* @__PURE__ */ import_react6.default.createElement(import_react6.default.StrictMode, null, /* @__PURE__ */ import_react6.default.createElement(App, null)), document.getElementById("root"));
+  import_react_dom.default.render(/* @__PURE__ */ import_react6.default.createElement(App, null), document.getElementById("root"));
 })();
 /*
 object-assign

@@ -25,6 +25,26 @@ app.get('/testAlbum', (req, res) => {
 });
 
 // Expects "start" and "end" date parameters both in yyyy-mm-dd format
+// Example response structure:
+/*
+  {
+    "2017-04-01": {
+      song: "100 Bad Days",
+      artist: "AJR",
+      album_url: "https://....",
+      track_uri: "57382479847",
+      count: 27
+    },
+    "2017-04-02": {
+      song: "Forever Winter",
+      artist: "Taylor Swift",
+      album_url: "https://...",
+      track_uri: "48579238419",
+      count: 170
+    },
+    ...
+  }
+*/
 app.get('/tracks', (req, res) => {
   let { start, end } = req.query;
 
@@ -34,7 +54,8 @@ app.get('/tracks', (req, res) => {
     json: true
   }, (error, response, data) => {
     // Create array of promises and resolve all of them before sending
-    let track_uris = Object.values(data.track_uri);
+    let keys = Object.keys(data);
+    let track_uris = keys.map(k => data[k].track_uri);
     Promise.all(
       track_uris.map(song_id => 
         new Promise((song_res, song_rej) => {
@@ -52,8 +73,7 @@ app.get('/tracks', (req, res) => {
       )
     )
     .then(albumUrls => {
-      let keys = Object.keys(data.track_uri);
-      data.album_urls = keys.reduce((acc, k, i) => (acc[k] = albumUrls[i], acc), {});
+      keys.map((k, i) => data[k].album_url = albumUrls[i]);
       res.send(data);
     })
     .catch(err => console.log(err));
