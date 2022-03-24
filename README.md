@@ -49,3 +49,4 @@ This project aims to present a calendar view of the most listened to songs on a 
   - Tweaked backend to send data in right format
   - Lifecycle methods are very helpful.
   - Realized app should probably be caching URLs to avoid high API call rates.
+- March 24, 2022 - Added URL cache for album covers.

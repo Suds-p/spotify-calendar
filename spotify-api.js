@@ -3,26 +3,21 @@ import { Buffer } from 'buffer';
 import request from 'request';
 import cors from 'cors';
 import secrets from './secrets.js';
-import { resolveNaptr } from 'dns/promises';
-const app = express();
 
+let token = '';
+let trackOptions = (song_id) => ({
+  url: `https://api.spotify.com/v1/tracks/${song_id}`,
+  headers: {'Authorization': 'Bearer ' + token},
+  json: true
+});
+let urlCache = {};
+
+const app = express();
 app.use(cors({origin: '*'}));
 
 app.get('/', (req, res) => {
   res.send("Oops, nothing to see here. Use /testAlbum or /tracks instead.")
 })
-
-app.get('/testAlbum', (req, res) => {
-  var albumOptions = {
-    url: `https://api.spotify.com/v1/tracks/${song_id}`,
-    headers: {'Authorization': 'Bearer ' + token},
-    json: true
-  };
-  request.get(albumOptions, function(error, response, song) {
-    console.log(song.album);
-    res.send(song.album);
-  });
-});
 
 // Expects "start" and "end" date parameters both in yyyy-mm-dd format
 // Example response structure:
@@ -31,13 +26,15 @@ app.get('/testAlbum', (req, res) => {
     "2017-04-01": {
       song: "100 Bad Days",
       artist: "AJR",
+      album: "Neotheater",
       album_url: "https://....",
       track_uri: "57382479847",
-      count: 27
+      count: 42
     },
     "2017-04-02": {
       song: "Forever Winter",
       artist: "Taylor Swift",
+      album: "Red (Taylor's Version)",
       album_url: "https://...",
       track_uri: "48579238419",
       count: 170
@@ -57,18 +54,24 @@ app.get('/tracks', (req, res) => {
     let keys = Object.keys(data);
     let track_uris = keys.map(k => data[k].track_uri);
     Promise.all(
-      track_uris.map(song_id => 
+      track_uris.map((song_id, i) => 
         new Promise((song_res, song_rej) => {
           song_id = song_id.split(":")[2];
-          request.get(trackOptions(song_id), (err, res, song) => {
-            if (song && song.album) {
-              let url = song.album.images[1].url;
-              song_res(url);
-            } else {
-              console.log('Song that came back was');
-              console.log(song);
-            }
-          });
+          let urlId = data[keys[i]].artist + data[keys[i]].album;
+          if (urlCache[urlId]) {
+            console.log("used cache");
+            song_res(urlCache[urlId]);
+          } else {
+            request.get(trackOptions(song_id), (err, res, song) => {
+              if (song && song.album) {
+                let url = song.album.images[1].url;
+                urlCache[urlId] = url;
+                song_res(url);
+              } else {
+                song_rej({error: err, song: song});
+              }
+            });
+          }
         })
       )
     )
@@ -76,20 +79,17 @@ app.get('/tracks', (req, res) => {
       keys.map((k, i) => data[k].album_url = albumUrls[i]);
       res.send(data);
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      console.log("Fetching tracks in range failed:");
+      console.log(err)
+    });
   });
 });
 
-app.listen(5500);
-
-// const body = document.getElementsByTagName('main')[0];
-const song_id = '1Qpq65tfyd7NWmIf3gRxEU';
-let token = '';
-let trackOptions = (song_id) => ({
-  url: `https://api.spotify.com/v1/tracks/${song_id}`,
-  headers: {'Authorization': 'Bearer ' + token},
-  json: true
+app.get("/pollcache", (req, res) => {
+  res.send(urlCache);
 });
+
 
 let {client_id, client_secret} = secrets;
 const authOptions = {
@@ -114,3 +114,5 @@ request.post(authOptions, function(error, response, body) {
     console.log(body);
   }
 });
+
+app.listen(5500);

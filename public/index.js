@@ -1041,7 +1041,7 @@
             }
             return dispatcher.useContext(Context, unstable_observedBits);
           }
-          function useState3(initialState) {
+          function useState2(initialState) {
             var dispatcher = resolveDispatcher();
             return dispatcher.useState(initialState);
           }
@@ -1053,7 +1053,7 @@
             var dispatcher = resolveDispatcher();
             return dispatcher.useRef(initialValue);
           }
-          function useEffect2(create, deps) {
+          function useEffect(create, deps) {
             var dispatcher = resolveDispatcher();
             return dispatcher.useEffect(create, deps);
           }
@@ -1623,13 +1623,13 @@
           exports.useCallback = useCallback;
           exports.useContext = useContext;
           exports.useDebugValue = useDebugValue;
-          exports.useEffect = useEffect2;
+          exports.useEffect = useEffect;
           exports.useImperativeHandle = useImperativeHandle;
           exports.useLayoutEffect = useLayoutEffect;
           exports.useMemo = useMemo;
           exports.useReducer = useReducer;
           exports.useRef = useRef;
-          exports.useState = useState3;
+          exports.useState = useState2;
           exports.version = ReactVersion;
         })();
       }
@@ -20458,8 +20458,6 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     while (ns.length > 0) {
       week_groups.push(ns.splice(0, 7));
     }
-    console.log(">>> view data in month:");
-    console.log(viewData);
     return /* @__PURE__ */ import_react2.default.createElement("div", {
       className: "monthContainer"
     }, /* @__PURE__ */ import_react2.default.createElement(MonthHeader, {
@@ -20506,7 +20504,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     }
     componentDidMount() {
       let tempState = {};
-      this.mRange.map((x) => tempState[x[0] + "-" + x[1]] = { "meep": "moop" });
+      this.mRange.map((x) => tempState[x[0] + "-" + x[1]] = {});
       let keys = Object.keys(tempState);
       Promise.all(this.mRange.map((info) => {
         let [date1, date2] = [`${info[0]}-${info[1]}-01`, `${info[0]}-${info[1]}-31`];

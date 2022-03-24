@@ -38,9 +38,10 @@ build_daily_song_map:
 """
 def build_daily_song_map(df):
   g = df.groupby(["play-date", "master_metadata_track_name"]).agg(
+    album=pd.NamedAgg(column="master_metadata_album_album_name", aggfunc=max),
     artist=pd.NamedAgg(column="master_metadata_album_artist_name", aggfunc=max),
-    count=pd.NamedAgg(column="count", aggfunc=sum),
-    track_uri=pd.NamedAgg(column="spotify_track_uri", aggfunc=max))
+    track_uri=pd.NamedAgg(column="spotify_track_uri", aggfunc=max),
+    count=pd.NamedAgg(column="count", aggfunc=sum))
   g.reset_index(inplace=True)
   result = g.loc[g.groupby(["play-date"]).idxmax()['count']]
   result.set_index('play-date', inplace=True)
