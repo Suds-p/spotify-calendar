@@ -20484,7 +20484,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   var MonthCell = (props) => {
     const { dateString, isSpacer, viewData } = props;
     const cellClass = isSpacer ? "spacer" : "date";
-    const imgSrc = isSpacer ? "" : viewData && viewData.album_url ? viewData.album_url : "https://place-hold.it/100";
+    const imgSrc = isSpacer ? "" : viewData && viewData.album_url ? viewData.album_url : "../public/assets/no-song.png";
     return /* @__PURE__ */ import_react2.default.createElement("div", {
       id: dateString,
       className: "slot " + cellClass

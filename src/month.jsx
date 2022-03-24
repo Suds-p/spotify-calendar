@@ -77,7 +77,7 @@ let MonthCell = (props) => {
 
   const imgSrc  = isSpacer ? "" :
     (viewData && viewData.album_url) ? viewData.album_url :
-    "https://place-hold.it/100"
+    "../public/assets/no-song.png"
 
   return (
     <div id={dateString} className={"slot " + cellClass}>
