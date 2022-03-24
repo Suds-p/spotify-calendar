@@ -5,8 +5,8 @@ import cors from 'cors';
 import secrets from './secrets.js';
 
 let token = '';
-let trackOptions = (song_id) => ({
-  url: `https://api.spotify.com/v1/tracks/${song_id}`,
+let trackOptions = (trackURIs) => ({
+  url: `https://api.spotify.com/v1/tracks?ids=${trackURIs.join(",")}`,
   headers: {'Authorization': 'Bearer ' + token},
   json: true
 });
@@ -50,39 +50,24 @@ app.get('/tracks', (req, res) => {
     url: `http://localhost:5000/range-common-tracks?start=${start}&end=${end}`,
     json: true
   }, (error, response, data) => {
+    if (error || response.statusCode >= 400) {
+      console.log("Fetching tracks in range failed:");
+      console.log(error);
+      return;
+    }
     // Create array of promises and resolve all of them before sending
     let keys = Object.keys(data);
-    let track_uris = keys.map(k => data[k].track_uri);
-    Promise.all(
-      track_uris.map((song_id, i) => 
-        new Promise((song_res, song_rej) => {
-          song_id = song_id.split(":")[2];
-          let urlId = data[keys[i]].artist + data[keys[i]].album;
-          if (urlCache[urlId]) {
-            console.log("used cache");
-            song_res(urlCache[urlId]);
-          } else {
-            request.get(trackOptions(song_id), (err, res, song) => {
-              if (song && song.album) {
-                let url = song.album.images[1].url;
-                urlCache[urlId] = url;
-                song_res(url);
-              } else {
-                song_rej({error: err, song: song});
-              }
-            });
-          }
-        })
-      )
-    )
-    .then(albumUrls => {
-      keys.map((k, i) => data[k].album_url = albumUrls[i]);
-      res.send(data);
+    let trackURIs = keys.map(k => data[k].track_uri);
+    request.get(trackOptions(trackURIs), (err, songRes, songData) => {
+      if (err || songRes.statusCode >= 400) {
+        console.log("Fetching tracks in range failed:");
+        console.log(err)
+      } else {
+        let albumUrls = songData.tracks.map(d => d.album.images[1].url);
+        keys.map((k, i) => data[k].album_url = albumUrls[i]);
+        res.send(data);
+      }
     })
-    .catch(err => {
-      console.log("Fetching tracks in range failed:");
-      console.log(err)
-    });
   });
 });
 

@@ -44,7 +44,9 @@ def build_daily_song_map(df):
     count=pd.NamedAgg(column="count", aggfunc=sum))
   g.reset_index(inplace=True)
   result = g.loc[g.groupby(["play-date"]).idxmax()['count']]
-  result.set_index('play-date', inplace=True)
+  result.set_index("play-date", inplace=True)
+  result.rename(columns={"master_metadata_track_name": "song"}, inplace=True)
+  result["track_uri"] = result["track_uri"].map(lambda x: x.split(":")[-1])
   return result
 
 
