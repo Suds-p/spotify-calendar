@@ -30,6 +30,12 @@ nav {
   border-bottom: 10px solid rgb(70, 123, 122);
 }
 
+#calendarScreen {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+}
+
 .monthContainer {
   display: flex;
   flex-direction: column;
@@ -55,7 +61,7 @@ nav {
 }
 
 .slot {
-  width: 85px;
+  width: 70px;
   /* height: 85px; */
   display: inline-flex;
   flex-direction: column;

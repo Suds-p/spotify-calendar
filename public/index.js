@@ -20518,7 +20518,9 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       });
     }
     render() {
-      return /* @__PURE__ */ import_react3.default.createElement("main", null, this.mRange.map((info) => /* @__PURE__ */ import_react3.default.createElement(month_default, {
+      return /* @__PURE__ */ import_react3.default.createElement("main", {
+        id: "calendarScreen"
+      }, this.mRange.map((info) => /* @__PURE__ */ import_react3.default.createElement(month_default, {
         year: info[0],
         month: info[1],
         key: info[1],

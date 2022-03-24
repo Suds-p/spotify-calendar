@@ -59,7 +59,7 @@ class CalendarScreen extends React.Component{
   // Set up initial objects for each month in range
   render() {
     return (
-      <main>
+      <main id="calendarScreen">
        {this.mRange.map(info => 
           <MonthView 
             year={info[0]}
