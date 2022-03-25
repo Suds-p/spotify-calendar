@@ -9,7 +9,7 @@ This project aims to present a calendar view of the most listened to songs on a 
 3. ~~Actually switch from initial to calendar screen~~
 4. ~~Change own API to return more info on songs (name, artist, # of listens, etc.)~~
 4.5 ~~Make build_song_map() a heckin' lot more efficient, por favor.~~
-5. Show more info on hover
+5. ~~Show more info on hover~~
 6. Add some way for user to import Spotify data
 7. Process user data to get most listened songs
 8. Loading screen?
