@@ -1,4 +1,8 @@
 import React from 'react';
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
+import 'tippy.js/themes/material.css';
+import 'tippy.js/animations/scale-subtle.css';
 
 const monthNames = ["", "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
@@ -78,12 +82,25 @@ let MonthCell = (props) => {
   const imgSrc  = isSpacer ? "" :
     (viewData && viewData.album_url) ? viewData.album_url :
     "../public/assets/no-song.png"
+  
+
+  let tooltipContent = 'No song found!';
+  if (viewData) {
+    const {song, artist, count} = viewData;
+    tooltipContent = (<div>
+      <p><span className="tooltip-title">Song</span>: {song}</p>
+      <p><span className="tooltip-title">Artist</span>: {artist}</p>
+      <p><span className="tooltip-title">Count</span>: {count}</p>
+    </div>);
+  }
 
   return (
-    <div id={dateString} className={"slot " + cellClass}>
-      {isSpacer ? "" : dateString.split('-')[2]}
-      <img src={imgSrc}/>
-    </div>
+    <Tippy content={tooltipContent} theme="tomato">
+      <div id={dateString} className={"slot " + cellClass}>
+        {isSpacer ? "" : dateString.split('-')[2]}
+        <img src={imgSrc}/>
+      </div>
+    </Tippy>
   );
 }
 

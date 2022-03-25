@@ -9,7 +9,6 @@ This project aims to present a calendar view of the most listened to songs on a 
 3. ~~Actually switch from initial to calendar screen~~
 4. ~~Change own API to return more info on songs (name, artist, # of listens, etc.)~~
 4.5 ~~Make build_song_map() a heckin' lot more efficient, por favor.~~
-4.6 Add caching to backend to prevent high API call frequency.
 5. Show more info on hover
 6. Add some way for user to import Spotify data
 7. Process user data to get most listened songs
@@ -53,3 +52,4 @@ This project aims to present a calendar view of the most listened to songs on a 
 - March 24, 2022 - Mostly caching day.
   - Added URL cache for album covers.
   - Restyled months to fit side by side.
+  - Added tooltips to each date. Used @tippy.js/react (important lesson: this also needed the original library).

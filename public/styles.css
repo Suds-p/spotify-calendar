@@ -123,3 +123,8 @@ nav {
   border-radius: 8px;
   border: 1px solid gray;
 }
+
+.tooltip-title {
+  font-weight: 800;
+  color: #33e844;
+}
