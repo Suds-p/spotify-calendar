@@ -58,16 +58,20 @@ app.get('/tracks', (req, res) => {
     // Create array of promises and resolve all of them before sending
     let keys = Object.keys(data);
     let trackURIs = keys.map(k => data[k].track_uri);
-    request.get(trackOptions(trackURIs), (err, songRes, songData) => {
-      if (err || songRes.statusCode >= 400) {
-        console.log("Fetching tracks in range failed (2):");
-        console.log(err, songData)
-      } else {
-        let albumUrls = songData.tracks.map(d => d.album.images[1].url);
-        keys.map((k, i) => data[k].album_url = albumUrls[i]);
-        res.send(data);
-      }
-    })
+    if (trackURIs.length !== 0) {
+      request.get(trackOptions(trackURIs), (err, songRes, songData) => {
+        if (err || songRes.statusCode >= 400) {
+          console.log("Fetching tracks in range failed (2):");
+          console.log(err, songData)
+        } else {
+          let albumUrls = songData.tracks.map(d => d.album.images[1].url);
+          keys.map((k, i) => data[k].album_url = albumUrls[i]);
+          res.send(data);
+        }
+      })
+    } else {
+      res.send({});
+    }
   });
 });
 

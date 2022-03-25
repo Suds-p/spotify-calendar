@@ -23593,7 +23593,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       className: "row",
       key: i
     }, week.map((date, j) => {
-      let key = `${year}-${month}-${date}`;
+      let key = `${year}-${month}-${date < 10 ? "0" + date : date}`;
       return /* @__PURE__ */ import_react3.default.createElement(MonthCell, {
         dateString: key,
         isSpacer: date == 0,
@@ -23651,7 +23651,6 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
         });
       })).then((results) => {
         keys.map((k, i) => tempState[k] = results[i]);
-        console.log(tempState);
         this.setState(tempState);
       });
     }
@@ -23704,30 +23703,30 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       className: "row"
     }, /* @__PURE__ */ import_react6.default.createElement("div", {
       className: "col"
-    }, /* @__PURE__ */ import_react6.default.createElement("span", null, "start year"), /* @__PURE__ */ import_react6.default.createElement("input", {
-      id: "sy",
-      type: "text",
-      placeholder: "2021"
-    })), /* @__PURE__ */ import_react6.default.createElement("div", {
-      className: "col"
     }, /* @__PURE__ */ import_react6.default.createElement("span", null, "start month"), /* @__PURE__ */ import_react6.default.createElement("input", {
       id: "sm",
       type: "text",
       placeholder: "10"
+    })), /* @__PURE__ */ import_react6.default.createElement("div", {
+      className: "col"
+    }, /* @__PURE__ */ import_react6.default.createElement("span", null, "start year"), /* @__PURE__ */ import_react6.default.createElement("input", {
+      id: "sy",
+      type: "text",
+      placeholder: "2021"
     }))), /* @__PURE__ */ import_react6.default.createElement("div", {
       className: "row"
     }, /* @__PURE__ */ import_react6.default.createElement("div", {
-      className: "col"
-    }, /* @__PURE__ */ import_react6.default.createElement("span", null, "end year"), /* @__PURE__ */ import_react6.default.createElement("input", {
-      id: "ey",
-      type: "text",
-      placeholder: "2022"
-    })), /* @__PURE__ */ import_react6.default.createElement("div", {
       className: "col"
     }, /* @__PURE__ */ import_react6.default.createElement("span", null, "end month"), /* @__PURE__ */ import_react6.default.createElement("input", {
       id: "em",
       type: "text",
       placeholder: "02"
+    })), /* @__PURE__ */ import_react6.default.createElement("div", {
+      className: "col"
+    }, /* @__PURE__ */ import_react6.default.createElement("span", null, "end year"), /* @__PURE__ */ import_react6.default.createElement("input", {
+      id: "ey",
+      type: "text",
+      placeholder: "2022"
     }))), /* @__PURE__ */ import_react6.default.createElement("button", {
       id: "submit-date-btn",
       onClick: changeScreen

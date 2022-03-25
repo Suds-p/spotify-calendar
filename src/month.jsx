@@ -36,7 +36,7 @@ let MonthView = (props) => {
         week_groups.map((week, i) => (
           <div className="row" key={i}>{
             week.map((date, j) => {
-              let key = `${year}-${month}-${date}`
+              let key = `${year}-${month}-${date < 10 ? '0'+date : date}`
               return <MonthCell
                 dateString={key}
                 isSpacer={date == 0}

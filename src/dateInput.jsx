@@ -34,22 +34,22 @@ let DateInputScreen = (props) => {
     <div className="di-container">
       <div className="row">
         <div className="col">
-          <span>start year</span>
-          <input id="sy" type="text" placeholder="2021"/>
-        </div>
-        <div className="col">
           <span>start month</span>
           <input id="sm" type="text" placeholder="10"/>
+        </div>
+        <div className="col">
+          <span>start year</span>
+          <input id="sy" type="text" placeholder="2021"/>
         </div>
       </div>
       <div className="row">
         <div className="col">
-          <span>end year</span>
-          <input id="ey" type="text" placeholder="2022"/>
-        </div>
-        <div className="col">
           <span>end month</span>
           <input id="em" type="text" placeholder="02" />
+        </div>
+        <div className="col">
+          <span>end year</span>
+          <input id="ey" type="text" placeholder="2022"/>
         </div>
       </div>
       <button id="submit-date-btn" onClick={changeScreen}>Show me!</button>

@@ -51,7 +51,6 @@ class CalendarScreen extends React.Component{
     )
     .then(results => {
       keys.map((k, i) => tempState[k] = results[i]);
-      console.log(tempState);
       this.setState(tempState);
     });
   }
