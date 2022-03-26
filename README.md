@@ -12,7 +12,7 @@ This project aims to present a calendar view of the most listened to songs on a 
 5. ~~Show more info on hover~~
 6. Add some way for user to import Spotify data
 7. Process user data to get most listened songs
-8. Loading screen?
+8. ~~Loading screen?~~
 9. Maybe add error handling for Python in case data files don't exist.
 10. Move Spotify API code to Python (if possible) so album URLs get pulled in one place.
 11. (Optional) Clicking on date opens song in Spotify app.

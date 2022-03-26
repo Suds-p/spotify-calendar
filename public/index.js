@@ -2437,11 +2437,11 @@
       if (true) {
         (function() {
           "use strict";
-          var React8 = require_react();
+          var React10 = require_react();
           var _assign = require_object_assign();
           var Scheduler = require_scheduler();
           var tracing = require_tracing();
-          var ReactSharedInternals = React8.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+          var ReactSharedInternals = React10.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
           function warn(format2) {
             {
               for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -2473,7 +2473,7 @@
               Function.prototype.apply.call(console[level], console, argsWithFormat);
             }
           }
-          if (!React8) {
+          if (!React10) {
             {
               throw Error("ReactDOM was loaded before React. Make sure you load the React package before loading ReactDOM.");
             }
@@ -3689,7 +3689,7 @@
           var didWarnInvalidChild = false;
           function flattenChildren(children) {
             var content = "";
-            React8.Children.forEach(children, function(child) {
+            React10.Children.forEach(children, function(child) {
               if (child == null) {
                 return;
               }
@@ -3700,7 +3700,7 @@
           function validateProps2(element, props) {
             {
               if (typeof props.children === "object" && props.children !== null) {
-                React8.Children.forEach(props.children, function(child) {
+                React10.Children.forEach(props.children, function(child) {
                   if (child == null) {
                     return;
                   }
@@ -10893,7 +10893,7 @@
           }
           var fakeInternalInstance = {};
           var isArray = Array.isArray;
-          var emptyRefsObject = new React8.Component().refs;
+          var emptyRefsObject = new React10.Component().refs;
           var didWarnAboutStateAssignmentForComponent;
           var didWarnAboutUninitializedState;
           var didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate;
@@ -23649,18 +23649,18 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   });
 
   // src/index.jsx
-  var import_react8 = __toESM(require_react(), 1);
+  var import_react10 = __toESM(require_react(), 1);
   var import_react_dom2 = __toESM(require_react_dom(), 1);
 
   // src/app.jsx
-  var import_react7 = __toESM(require_react(), 1);
+  var import_react9 = __toESM(require_react(), 1);
 
   // src/header.jsx
   var import_react = __toESM(require_react(), 1);
   var header_default = Header = () => /* @__PURE__ */ import_react.default.createElement("nav", null, "Spotify Song Calendar");
 
   // src/calendar.jsx
-  var import_react5 = __toESM(require_react(), 1);
+  var import_react7 = __toESM(require_react(), 1);
 
   // src/month.jsx
   var import_react3 = __toESM(require_react(), 1);
@@ -26849,6 +26849,46 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   };
   var month_default = MonthView;
 
+  // src/loading.jsx
+  var import_react5 = __toESM(require_react(), 1);
+  var loading_default = Loader = () => {
+    return /* @__PURE__ */ import_react5.default.createElement("div", {
+      className: "screen-container"
+    }, /* @__PURE__ */ import_react5.default.createElement("h1", {
+      style: { marginBottom: 20, color: "orange" }
+    }, "Loading . . ."), /* @__PURE__ */ import_react5.default.createElement("div", {
+      className: "loading-center"
+    }, /* @__PURE__ */ import_react5.default.createElement("div", {
+      className: "wave"
+    }), /* @__PURE__ */ import_react5.default.createElement("div", {
+      className: "wave"
+    }), /* @__PURE__ */ import_react5.default.createElement("div", {
+      className: "wave"
+    }), /* @__PURE__ */ import_react5.default.createElement("div", {
+      className: "wave"
+    }), /* @__PURE__ */ import_react5.default.createElement("div", {
+      className: "wave"
+    }), /* @__PURE__ */ import_react5.default.createElement("div", {
+      className: "wave"
+    }), /* @__PURE__ */ import_react5.default.createElement("div", {
+      className: "wave"
+    }), /* @__PURE__ */ import_react5.default.createElement("div", {
+      className: "wave"
+    }), /* @__PURE__ */ import_react5.default.createElement("div", {
+      className: "wave"
+    }), /* @__PURE__ */ import_react5.default.createElement("div", {
+      className: "wave"
+    })));
+  };
+
+  // src/offline.jsx
+  var import_react6 = __toESM(require_react(), 1);
+  function ErrorScreen() {
+    return /* @__PURE__ */ import_react6.default.createElement("div", {
+      className: "screen-container"
+    }, /* @__PURE__ */ import_react6.default.createElement("h1", null, "Server is currently offline."), /* @__PURE__ */ import_react6.default.createElement("p", null, "Check back later when it's on!"));
+  }
+
   // src/calendar.jsx
   var monthNames = [
     "",
@@ -26865,17 +26905,18 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     "November",
     "December"
   ];
-  var CalendarScreen = class extends import_react5.default.Component {
+  var CalendarScreen = class extends import_react7.default.Component {
     constructor(props) {
       super(props);
       let { startYear, startMonth, endYear, endMonth } = this.props;
       this.mRange = getMonthRange(startYear, startMonth, endYear, endMonth);
-      this.state = {};
+      this.state = { loading: false, offline: true, viewData: {} };
     }
     componentDidMount() {
       let tempState = {};
       this.mRange.map((x) => tempState[x[0] + "-" + x[1]] = {});
       let keys = Object.keys(tempState);
+      this.setState({ loading: true });
       Promise.all(this.mRange.map((info) => {
         let [date1, date2] = [`${info[0]}-${info[1]}-01`, `${info[0]}-${info[1]}-31`];
         return new Promise((res, rej) => {
@@ -26883,17 +26924,19 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
         });
       })).then((results) => {
         keys.map((k, i) => tempState[k] = results[i]);
-        this.setState(tempState);
+        this.setState({ loading: false, offline: false, viewData: tempState });
+      }).catch((err) => {
+        this.setState({ loading: false, offline: true });
       });
     }
     render() {
-      return /* @__PURE__ */ import_react5.default.createElement("main", {
+      return this.state.loading ? /* @__PURE__ */ import_react7.default.createElement(loading_default, null) : this.state.offline ? /* @__PURE__ */ import_react7.default.createElement(ErrorScreen, null) : /* @__PURE__ */ import_react7.default.createElement("main", {
         id: "calendarScreen"
-      }, this.mRange.map((info) => /* @__PURE__ */ import_react5.default.createElement(month_default, {
+      }, this.mRange.map((info) => /* @__PURE__ */ import_react7.default.createElement(month_default, {
         year: info[0],
         month: info[1],
         key: info[0] + "-" + info[1],
-        viewData: this.state[info[0] + "-" + info[1]]
+        viewData: this.state.viewData[info[0] + "-" + info[1]]
       })));
     }
   };
@@ -26909,7 +26952,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   var calendar_default = CalendarScreen;
 
   // src/dateInput.jsx
-  var import_react6 = __toESM(require_react(), 1);
+  var import_react8 = __toESM(require_react(), 1);
   var import_react_day_picker = __toESM(require_react_day_picker_min(), 1);
   var import_DayPickerInput = __toESM(require_DayPickerInput2(), 1);
   var DayPickerInput = import_DayPickerInput.default.__esModule ? import_DayPickerInput.default.default : import_DayPickerInput.default;
@@ -26924,28 +26967,28 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       const { year, month } = e.target.form;
       onChange(new Date(year.value, month.value));
     };
-    return /* @__PURE__ */ import_react6.default.createElement("form", {
+    return /* @__PURE__ */ import_react8.default.createElement("form", {
       className: "DayPicker-Caption"
-    }, /* @__PURE__ */ import_react6.default.createElement("select", {
+    }, /* @__PURE__ */ import_react8.default.createElement("select", {
       name: "month",
       onChange: handleChange,
       value: date.getMonth()
-    }, months.map((month, i) => /* @__PURE__ */ import_react6.default.createElement("option", {
+    }, months.map((month, i) => /* @__PURE__ */ import_react8.default.createElement("option", {
       key: month,
       value: i
-    }, " ", month, " "))), /* @__PURE__ */ import_react6.default.createElement("select", {
+    }, " ", month, " "))), /* @__PURE__ */ import_react8.default.createElement("select", {
       name: "year",
       onChange: handleChange,
       value: date.getFullYear()
-    }, years.map((year) => /* @__PURE__ */ import_react6.default.createElement("option", {
+    }, years.map((year) => /* @__PURE__ */ import_react8.default.createElement("option", {
       key: year,
       value: year
     }, " ", year, " "))));
   }
   var DateInputScreen = (props) => {
     const { setState } = props;
-    let [startDate, setStart] = (0, import_react6.useState)(new Date());
-    let [endDate, setEnd] = (0, import_react6.useState)(new Date());
+    let [startDate, setStart] = (0, import_react8.useState)(new Date());
+    let [endDate, setEnd] = (0, import_react8.useState)(new Date());
     function changeScreen() {
       if (validDates(startDate, endDate)) {
         setState({
@@ -26967,49 +27010,49 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       date.setDate(endDate.getDate());
       setEnd(date);
     }
-    return /* @__PURE__ */ import_react6.default.createElement("div", {
+    return /* @__PURE__ */ import_react8.default.createElement("div", {
       className: "di-container"
-    }, /* @__PURE__ */ import_react6.default.createElement("div", {
+    }, /* @__PURE__ */ import_react8.default.createElement("div", {
       className: "input-field-container"
-    }, /* @__PURE__ */ import_react6.default.createElement("div", {
+    }, /* @__PURE__ */ import_react8.default.createElement("div", {
       className: "info"
-    }, /* @__PURE__ */ import_react6.default.createElement("div", {
+    }, /* @__PURE__ */ import_react8.default.createElement("div", {
       className: "lg-col"
-    }, /* @__PURE__ */ import_react6.default.createElement("p", {
+    }, /* @__PURE__ */ import_react8.default.createElement("p", {
       className: "hook-text"
-    }, "Explore your ", /* @__PURE__ */ import_react6.default.createElement("br", null), "Spotify ", /* @__PURE__ */ import_react6.default.createElement("span", {
+    }, "Explore your ", /* @__PURE__ */ import_react8.default.createElement("br", null), "Spotify ", /* @__PURE__ */ import_react8.default.createElement("span", {
       className: "hook-emphasis"
-    }, "obsessions"), "."), /* @__PURE__ */ import_react6.default.createElement("p", {
+    }, "obsessions"), "."), /* @__PURE__ */ import_react8.default.createElement("p", {
       className: "subtitle"
-    }, "You may have a clinical addiction to playing music or just like checking out some popular bangers every once in a while. Whatever your listening patterns, find out what or who you were into in the past.")), /* @__PURE__ */ import_react6.default.createElement("div", {
+    }, "You may have a clinical addiction to playing music or just like checking out some popular bangers every once in a while. Whatever your listening patterns, find out what or who you were into in the past.")), /* @__PURE__ */ import_react8.default.createElement("div", {
       className: "sm-col"
-    }, /* @__PURE__ */ import_react6.default.createElement("div", {
+    }, /* @__PURE__ */ import_react8.default.createElement("div", {
       className: "info"
-    }, /* @__PURE__ */ import_react6.default.createElement("p", null, "You've been listening since"), /* @__PURE__ */ import_react6.default.createElement("p", {
+    }, /* @__PURE__ */ import_react8.default.createElement("p", null, "You've been listening since"), /* @__PURE__ */ import_react8.default.createElement("p", {
       className: "listen-start-info"
-    }, "Mar 2017")))), /* @__PURE__ */ import_react6.default.createElement("div", {
+    }, "Mar 2017")))), /* @__PURE__ */ import_react8.default.createElement("div", {
       style: { display: "flex", flexDirection: "column" }
-    }, /* @__PURE__ */ import_react6.default.createElement("p", null, /* @__PURE__ */ import_react6.default.createElement("strong", null, "Show my obsessions from")), /* @__PURE__ */ import_react6.default.createElement("div", {
+    }, /* @__PURE__ */ import_react8.default.createElement("p", null, /* @__PURE__ */ import_react8.default.createElement("strong", null, "Show my obsessions from")), /* @__PURE__ */ import_react8.default.createElement("div", {
       className: "input-container-row"
-    }, /* @__PURE__ */ import_react6.default.createElement("div", {
+    }, /* @__PURE__ */ import_react8.default.createElement("div", {
       className: "input-row"
-    }, /* @__PURE__ */ import_react6.default.createElement(DayPickerInput, {
+    }, /* @__PURE__ */ import_react8.default.createElement(DayPickerInput, {
       onDayChange: setStart,
-      dayPickerProps: { month: startDate, captionElement: ({ date, localeUtils }) => /* @__PURE__ */ import_react6.default.createElement(YearMonthForm, {
+      dayPickerProps: { month: startDate, captionElement: ({ date, localeUtils }) => /* @__PURE__ */ import_react8.default.createElement(YearMonthForm, {
         date,
         localeUtils,
         onChange: handleStartYMChange
       }) }
-    })), /* @__PURE__ */ import_react6.default.createElement("p", null, /* @__PURE__ */ import_react6.default.createElement("strong", null, "to")), /* @__PURE__ */ import_react6.default.createElement("div", {
+    })), /* @__PURE__ */ import_react8.default.createElement("p", null, /* @__PURE__ */ import_react8.default.createElement("strong", null, "to")), /* @__PURE__ */ import_react8.default.createElement("div", {
       className: "input-row"
-    }, /* @__PURE__ */ import_react6.default.createElement(DayPickerInput, {
+    }, /* @__PURE__ */ import_react8.default.createElement(DayPickerInput, {
       onDayChange: setEnd,
-      dayPickerProps: { month: endDate, captionElement: ({ date, localeUtils }) => /* @__PURE__ */ import_react6.default.createElement(YearMonthForm, {
+      dayPickerProps: { month: endDate, captionElement: ({ date, localeUtils }) => /* @__PURE__ */ import_react8.default.createElement(YearMonthForm, {
         date,
         localeUtils,
         onChange: handleEndYMChange
       }) }
-    })), /* @__PURE__ */ import_react6.default.createElement("button", {
+    })), /* @__PURE__ */ import_react8.default.createElement("button", {
       id: "submit-date-btn",
       onClick: changeScreen
     }, "Show me!")))));
@@ -27030,20 +27073,20 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     endMonth: 0
   };
   function App() {
-    const [state, setState] = (0, import_react7.useState)(INITIAL_STATE);
+    const [state, setState] = (0, import_react9.useState)(INITIAL_STATE);
     let { screen, startYear, startMonth, endYear, endMonth } = state;
-    return /* @__PURE__ */ import_react7.default.createElement("div", null, /* @__PURE__ */ import_react7.default.createElement(header_default, null), screen === CALENDAR ? /* @__PURE__ */ import_react7.default.createElement(calendar_default, {
+    return /* @__PURE__ */ import_react9.default.createElement("div", null, /* @__PURE__ */ import_react9.default.createElement(header_default, null), screen === CALENDAR ? /* @__PURE__ */ import_react9.default.createElement(calendar_default, {
       startYear,
       startMonth,
       endYear,
       endMonth
-    }) : screen === DATE_INPUT && /* @__PURE__ */ import_react7.default.createElement(dateInput_default, {
+    }) : screen === DATE_INPUT && /* @__PURE__ */ import_react9.default.createElement(dateInput_default, {
       setState
     }));
   }
 
   // src/index.jsx
-  import_react_dom2.default.render(/* @__PURE__ */ import_react8.default.createElement(App, null), document.getElementById("root"));
+  import_react_dom2.default.render(/* @__PURE__ */ import_react10.default.createElement(App, null), document.getElementById("root"));
 })();
 /*
 object-assign

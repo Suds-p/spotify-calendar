@@ -1,5 +1,7 @@
 import React from 'react';
 import MonthView from './month';
+import Loader from './loading';
+import OfflineScreen from './offline';
 
 export const monthNames = ["", "January", "February", "March", "April", "May", "June",
 "July", "August", "September", "October", "November", "December"
@@ -36,13 +38,15 @@ class CalendarScreen extends React.Component{
     super(props);
     let { startYear, startMonth, endYear, endMonth } = this.props;
     this.mRange = getMonthRange(startYear, startMonth, endYear, endMonth);
-    this.state = {};
+    this.state = {loading: false, offline: true, viewData: {}};
   }
 
   componentDidMount() {
     let tempState = {};
     this.mRange.map(x => tempState[x[0]+"-"+x[1]] = {} );
     let keys = Object.keys(tempState);
+    this.setState({ loading: true });
+    
     Promise.all(
       this.mRange.map(info => {
         let [date1, date2] = [`${info[0]}-${info[1]}-01`, `${info[0]}-${info[1]}-31`];
@@ -56,20 +60,24 @@ class CalendarScreen extends React.Component{
     )
     .then(results => {
       keys.map((k, i) => tempState[k] = results[i]);
-      this.setState(tempState);
+      this.setState({loading: false, offline: false, viewData: tempState});
+    })
+    .catch(err => {
+      this.setState({loading: false, offline: true});
     });
   }
   
   // Set up initial objects for each month in range
   render() {
-    return (
+    return this.state.loading ? <Loader /> :
+      this.state.offline ? <OfflineScreen /> : (
       <main id="calendarScreen">
        {this.mRange.map(info => 
           <MonthView 
             year={info[0]}
             month={info[1]}
             key={info[0]+'-'+info[1]}
-            viewData={this.state[info[0]+'-'+info[1]]} />)}
+            viewData={this.state.viewData[info[0]+'-'+info[1]]} />)}
       </main>
     );
   }
