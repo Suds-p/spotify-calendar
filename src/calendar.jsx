@@ -1,6 +1,10 @@
 import React from 'react';
 import MonthView from './month';
 
+export const monthNames = ["", "January", "February", "March", "April", "May", "June",
+"July", "August", "September", "October", "November", "December"
+];
+
 // Example state structure:
 /*
  {
@@ -46,6 +50,7 @@ class CalendarScreen extends React.Component{
           fetch(`http://localhost:5500/tracks?start=${date1}&end=${date2}`)
           .then(resp => resp.json())
           .then(data => res(data))
+          .catch(err => rej(`Server is likely offline: ${err}`))
         });
       })
     )
@@ -63,7 +68,7 @@ class CalendarScreen extends React.Component{
           <MonthView 
             year={info[0]}
             month={info[1]}
-            key={info[1]}
+            key={info[0]+'-'+info[1]}
             viewData={this.state[info[0]+'-'+info[1]]} />)}
       </main>
     );

@@ -1,10 +1,10 @@
 * {
-  font-family: 'Fredoka', sans-serif;
   margin: 0;
   padding: 0;
 }
 
 html, body{
+  font-family: 'Fredoka', sans-serif;
   min-height: 100%;
 }
 
@@ -19,15 +19,15 @@ html, body{
 
 nav {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  background: rgb(90, 143, 142);
   height: 80px;
-  font-family: Raleway;
+  padding: 0 30px;
+  background: #1bb92b;
+  font-family: 'Raleway';
   font-weight: 800;
   font-size: 32px;
   color: white;
-  border-bottom: 10px solid rgb(70, 123, 122);
 }
 
 #calendarScreen {
@@ -79,6 +79,83 @@ nav {
   align-items: center;
   min-height: 100%;
   margin-top: -90px;
+  font-family: 'Raleway';
+}
+
+.input-field-container {
+  width: 100%;
+  max-width: 700px;
+  min-height: 400px;
+  background: #E86252;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.input-field-container > .info {
+  display: flex;
+}
+
+.input-field-container .lg-col {
+  max-width: 60%;
+  padding: 5px;
+}
+
+.input-field-container .hook-text {
+  color: black;
+  font-weight: 800;
+  font-size: 36px;
+}
+
+.hook-emphasis {
+  color: white;
+}
+
+.input-field-container .subtitle {
+  margin-top: 10px;
+}
+
+.input-field-container .sm-col {
+  width: 100%;
+  padding: 5px;
+}
+
+.input-field-container .sm-col .info {
+  text-align: center;
+  background: black;
+  color: #E86252;
+  font-weight: bold;
+  padding: 30px 5px;
+  margin-top: 20px;
+  border-radius: 50px;
+}
+
+.input-field-container .sm-col .listen-start-info {
+  font-size: 32px;
+  font-weight: bold;
+  color: white;
+}
+
+.input-field-container .input-container-row {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 40%;
+}
+
+.input-field-container p {
+  margin-bottom: 5px;
+}
+
+.input-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.subtitle {
+  font-weight: 500;
+  font-size: 14px;
 }
 
 .di-container .row {
@@ -102,20 +179,22 @@ nav {
 #submit-date-btn {
   width: 150px;
   height: 50px;
-  background: #d19def;
-  border: 3px solid #ae85c5;
+  background: #109b23;
+  border: 3px solid #0e811e;
   border-radius: 15px;
   color: white;
   font-weight: bold;
   font-size: larger;
+  align-self: center;
+  font-family: 'Raleway';
 }
 
 #submit-date-btn:focus {
-  box-shadow: 0px 1px 11px 0px #a25ccc;
+  box-shadow: 0px 1px 11px 0px #17255a;
 }
 
 #submit-date-btn:active {
-  box-shadow: inset 4px 4px 11px 0px #a25ccc;
+  box-shadow: inset 4px 4px 11px 0px #17255a;
 }
 
 .di-container input {
@@ -127,4 +206,9 @@ nav {
 .tooltip-title {
   font-weight: 800;
   color: #33e844;
+}
+
+/** Modifications to the react-day-picker .css styles */
+.DayPicker {
+  background: white;
 }

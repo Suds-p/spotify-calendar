@@ -16,6 +16,8 @@ This project aims to present a calendar view of the most listened to songs on a 
 9. Maybe add error handling for Python in case data files don't exist.
 10. Move Spotify API code to Python (if possible) so album URLs get pulled in one place.
 11. (Optional) Clicking on date opens song in Spotify app.
+12. ~~Use actual date pickers on first page.~~
+13. Add API endpoint to get start date of user's listening history.
 
 ### Progress
 - March 15, 2022 - Started project. Pulled album covers from track IDs.
@@ -53,3 +55,4 @@ This project aims to present a calendar view of the most listened to songs on a 
   - Added URL cache for album covers.
   - Restyled months to fit side by side.
   - Added tooltips to each date. Used @tippy.js/react (important lesson: this also needed the original library).
+- March 25, 2022 - Bug fixes, handling API errors, added date pickers to front page.

@@ -3,10 +3,7 @@ import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/themes/material.css';
 import 'tippy.js/animations/scale-subtle.css';
-
-const monthNames = ["", "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
-];
+import { monthNames } from './calendar';
 
 /**
  * View for an entire calendar month with cells for each date.
