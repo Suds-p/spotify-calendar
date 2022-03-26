@@ -3,6 +3,7 @@ import DayPicker from 'react-day-picker'
 import DPI from 'react-day-picker/DayPickerInput'
 import 'react-day-picker/lib/style.css';
 import { CALENDAR } from './app';
+import { monthNames } from './calendar';
 const DayPickerInput = DPI.__esModule ? DPI.default : DPI
 
 // Derived from https://react-day-picker.js.org/examples/elements-year-navigation
@@ -105,6 +106,8 @@ let DateInputScreen = (props) => {
           <div className="input-container-row">
             <div className="input-row">
               <DayPickerInput
+                formatDate={customDateFormat}
+                value={startDate}
                 onDayChange={setStart}
                 dayPickerProps={{month: startDate, captionElement: ({ date, localeUtils }) => (
                   <YearMonthForm
@@ -116,6 +119,8 @@ let DateInputScreen = (props) => {
             <p><strong>to</strong></p>
             <div className="input-row">
               <DayPickerInput
+                formatDate={customDateFormat}
+                value={endDate}
                 onDayChange={setEnd}
                 dayPickerProps={{month: endDate, captionElement: ({ date, localeUtils }) => (
                   <YearMonthForm
@@ -161,6 +166,11 @@ let DateInputScreen = (props) => {
 // Input validation for date inputs (parameters are Date objects)
 function validDates(start, end) {
   return (start && end) && start <= end;
+}
+
+// Custom date format for input display
+function customDateFormat(date) {
+  return monthNames[date.getMonth() + 1] + " " + date.getDate() + ", " + date.getFullYear();
 }
 
 export default DateInputScreen;

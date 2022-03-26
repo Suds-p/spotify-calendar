@@ -27037,6 +27037,8 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     }, /* @__PURE__ */ import_react8.default.createElement("div", {
       className: "input-row"
     }, /* @__PURE__ */ import_react8.default.createElement(DayPickerInput, {
+      formatDate: customDateFormat,
+      value: startDate,
       onDayChange: setStart,
       dayPickerProps: { month: startDate, captionElement: ({ date, localeUtils }) => /* @__PURE__ */ import_react8.default.createElement(YearMonthForm, {
         date,
@@ -27046,6 +27048,8 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     })), /* @__PURE__ */ import_react8.default.createElement("p", null, /* @__PURE__ */ import_react8.default.createElement("strong", null, "to")), /* @__PURE__ */ import_react8.default.createElement("div", {
       className: "input-row"
     }, /* @__PURE__ */ import_react8.default.createElement(DayPickerInput, {
+      formatDate: customDateFormat,
+      value: endDate,
       onDayChange: setEnd,
       dayPickerProps: { month: endDate, captionElement: ({ date, localeUtils }) => /* @__PURE__ */ import_react8.default.createElement(YearMonthForm, {
         date,
@@ -27059,6 +27063,9 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   };
   function validDates(start2, end2) {
     return start2 && end2 && start2 <= end2;
+  }
+  function customDateFormat(date) {
+    return monthNames[date.getMonth() + 1] + " " + date.getDate() + ", " + date.getFullYear();
   }
   var dateInput_default = DateInputScreen;
 
