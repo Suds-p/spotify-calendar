@@ -23,10 +23,6 @@
     "tippy.js": "^6.3.7"
   },
   "devDependencies": {
-    "@babel/cli": "^7.17.6",
-    "@babel/core": "^7.17.7",
-    "@babel/preset-env": "^7.16.11",
-    "@babel/preset-react": "^7.16.7",
     "nodemon": "^2.0.15"
   }
 }
