@@ -10,7 +10,7 @@ This project aims to present a calendar view of the most listened to songs on a 
 4. ~~Change own API to return more info on songs (name, artist, # of listens, etc.)~~
 4.5 ~~Make build_song_map() a heckin' lot more efficient, por favor.~~
 5. ~~Show more info on hover~~
-6. Add some way for user to import Spotify data
+6. ~~Add some way for user to import Spotify data (+ add API endpoint for this).~~
 7. Process user data to get most listened songs
 8. ~~Loading screen?~~
 9. Maybe add error handling for Python in case data files don't exist.
@@ -57,3 +57,4 @@ This project aims to present a calendar view of the most listened to songs on a 
   - Added tooltips to each date. Used @tippy.js/react (important lesson: this also needed the original library).
 - March 25, 2022 - Bug fixes, handling API errors, added date pickers to front page.
 - March 27, 2022 - Learned how to read files from POST requests and save to disk.
+- March 29, 2022 - Re-learned how to read files from POST requests using body-parser. Implemented file uploading and had to increase file limits accepted by body-parser.
