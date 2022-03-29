@@ -44,10 +44,12 @@ function YearMonthForm({ date, localeUtils, onChange }) {
  * 
  * @param props: should have { setState } which changes the current screen.
  */
+// TODO: Refactor code to put file input in separate component
 let DateInputScreen = (props) => {
   const { setState } = props;
   let [ startDate, setStart ] = useState(new Date());
   let [ endDate, setEnd ] = useState(new Date());
+  let [ hasFiles, setHasFiles ] = useState(false);
 
   function changeScreen() {
     if (validDates(startDate, endDate)) {
@@ -63,17 +65,15 @@ let DateInputScreen = (props) => {
     }
   }
 
-  function handleStartYMChange(date) {
-    // Take on existing day when month changes
-    date.setDate(startDate.getDate());
-    setStart(date);
-  }
-
-  function handleEndYMChange(date) {
-    // Take on existing day when month changes
-    date.setDate(endDate.getDate());
-    setEnd(date);
-  }
+  const dateInputBox = (
+    <div style={{display: "flex", flexDirection: "column"}}>
+      <p><strong>Show my obsessions from</strong></p>
+      <DateInput
+        startDate={startDate} setStart={setStart}
+        endDate={endDate} setEnd={setEnd}
+        />
+      <button id="submit-date-btn" onClick={changeScreen}>Show me!</button>
+    </div>);
 
   return (
     <div className="di-container">
@@ -100,67 +100,103 @@ let DateInputScreen = (props) => {
             </div>
           </div>
         </div>
-        
-        <div style={{display: "flex", flexDirection: "column"}}>
-          <p><strong>Show my obsessions from</strong></p>
-          <div className="input-container-row">
-            <div className="input-row">
-              <DayPickerInput
-                formatDate={customDateFormat}
-                value={startDate}
-                onDayChange={setStart}
-                dayPickerProps={{month: startDate, captionElement: ({ date, localeUtils }) => (
-                  <YearMonthForm
-                    date={date}
-                    localeUtils={localeUtils}
-                    onChange={handleStartYMChange}
-                  />)}} />
-            </div>
-            <p><strong>to</strong></p>
-            <div className="input-row">
-              <DayPickerInput
-                formatDate={customDateFormat}
-                value={endDate}
-                onDayChange={setEnd}
-                dayPickerProps={{month: endDate, captionElement: ({ date, localeUtils }) => (
-                  <YearMonthForm
-                    date={date}
-                    localeUtils={localeUtils}
-                    onChange={handleEndYMChange}
-                  />)}} />
-            </div>
-            <button id="submit-date-btn" onClick={changeScreen}>Show me!</button>
-          </div>
-        </div>
+
+        {hasFiles ? dateInputBox : <FileInput updateHasFiles={() => setHasFiles(true)} />}
+
       </div>
     </div>
   );
+}
 
-  // return (
-  //   <div className="di-container">
-  //     <div className="row">
-  //       <div className="col">
-  //         <span>start month</span>
-  //         <input id="sm" type="text" placeholder="10"/>
-  //       </div>
-  //       <div className="col">
-  //         <span>start year</span>
-  //         <input id="sy" type="text" placeholder="2021"/>
-  //       </div>
-  //     </div>
-  //     <div className="row">
-  //       <div className="col">
-  //         <span>end month</span>
-  //         <input id="em" type="text" placeholder="02" />
-  //       </div>
-  //       <div className="col">
-  //         <span>end year</span>
-  //         <input id="ey" type="text" placeholder="2022"/>
-  //       </div>
-  //     </div>
-  //     <button id="submit-date-btn" onClick={changeScreen}>Show me!</button>
-  //   </div>
-  // );
+function FileInput(props) {
+  const [EMPTY, INVALID, VALID] = ["empty", "invalid", "valid"];
+  const nameReg = /(endsong)_(\d|0[1-9]|[1-9]\d).json/gm;
+  let { updateHasFiles } = props;
+  let [ selectionState, setSelectionState ] = useState(EMPTY);
+  let [ errorMessage, setErrorMessage ] = useState("");
+
+  function validateSelection() {
+    let fileInput = document.getElementById("song-files");
+    let files = Array.from(fileInput.files);
+    let names = files.map(f => f.name);
+    if (files.length === 0) {
+      setSelectionState(INVALID);
+      setErrorMessage("No files are selected");
+    } else if (! names.every(n => n.match(nameReg))) {
+      setSelectionState(INVALID);
+      setErrorMessage("File names must have a 'endsong_xx.json' format");
+    }
+    else {
+      setSelectionState(VALID);
+      setErrorMessage("");
+    }
+  }
+
+  function submitFiles() {
+    let fileInput = document.getElementById("song-files");
+    let files = Array.from(fileInput.files);
+    if (selectionState === VALID) uploadFiles(files).then(updateHasFiles);
+  }
+
+  return (
+    <div>
+      <input
+        multiple
+        type="file"
+        name="songFiles"
+        id="song-files"
+        onChange={validateSelection}
+        className={selectionState === EMPTY ? "" : "file-input-"+selectionState} />
+      <button onClick={submitFiles}>Upload</button>
+      {errorMessage !== "" && <span>{errorMessage}</span>} 
+    </div>
+  );
+}
+
+function DateInput(props) {
+  let { startDate, setStart, endDate, setEnd } = props;
+
+  function handleStartYMChange(date) {
+    // Take on existing day when month changes
+    date.setDate(startDate.getDate());
+    setStart(date);
+  }
+
+  function handleEndYMChange(date) {
+    // Take on existing day when month changes
+    date.setDate(endDate.getDate());
+    setEnd(date);
+  }
+
+  return (
+    <div className="input-container-row">
+      <div className="input-row">
+        <DayPickerInput
+          formatDate={customDateFormat}
+          value={startDate}
+          onDayChange={setStart}
+          dayPickerProps={{month: startDate, captionElement: ({ date, localeUtils }) => (
+            <YearMonthForm
+              date={date}
+              localeUtils={localeUtils}
+              onChange={handleStartYMChange}
+            />)}} />
+      </div>
+      <p><strong>to</strong></p>
+      <div className="input-row">
+        <DayPickerInput
+          formatDate={customDateFormat}
+          value={endDate}
+          onDayChange={setEnd}
+          dayPickerProps={{month: endDate, captionElement: ({ date, localeUtils }) => (
+            <YearMonthForm
+              date={date}
+              localeUtils={localeUtils}
+              onChange={handleEndYMChange}
+            />)}} />
+      </div>
+    </div>
+  );
 }
 
 // Input validation for date inputs (parameters are Date objects)
@@ -171,6 +207,14 @@ function validDates(start, end) {
 // Custom date format for input display
 function customDateFormat(date) {
   return monthNames[date.getMonth() + 1] + " " + date.getDate() + ", " + date.getFullYear();
+}
+
+// Uploads files to custom server via POST requests
+function uploadFiles(files) {
+  return new Promise((res, rej) => {
+    console.log(`Nothing here yet, but received ${files.length} files.`);
+    res("All good to go");
+  })
 }
 
 export default DateInputScreen;

@@ -56,3 +56,4 @@ This project aims to present a calendar view of the most listened to songs on a 
   - Restyled months to fit side by side.
   - Added tooltips to each date. Used @tippy.js/react (important lesson: this also needed the original library).
 - March 25, 2022 - Bug fixes, handling API errors, added date pickers to front page.
+- March 27, 2022 - Learned how to read files from POST requests and save to disk.

@@ -26989,6 +26989,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     const { setState } = props;
     let [startDate, setStart] = (0, import_react8.useState)(new Date());
     let [endDate, setEnd] = (0, import_react8.useState)(new Date());
+    let [hasFiles, setHasFiles] = (0, import_react8.useState)(false);
     function changeScreen() {
       if (validDates(startDate, endDate)) {
         setState({
@@ -27002,14 +27003,17 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
         console.log(`Date range is not valid! From ${startDate} to ${endDate}.`);
       }
     }
-    function handleStartYMChange(date) {
-      date.setDate(startDate.getDate());
-      setStart(date);
-    }
-    function handleEndYMChange(date) {
-      date.setDate(endDate.getDate());
-      setEnd(date);
-    }
+    const dateInputBox = /* @__PURE__ */ import_react8.default.createElement("div", {
+      style: { display: "flex", flexDirection: "column" }
+    }, /* @__PURE__ */ import_react8.default.createElement("p", null, /* @__PURE__ */ import_react8.default.createElement("strong", null, "Show my obsessions from")), /* @__PURE__ */ import_react8.default.createElement(DateInput, {
+      startDate,
+      setStart,
+      endDate,
+      setEnd
+    }), /* @__PURE__ */ import_react8.default.createElement("button", {
+      id: "submit-date-btn",
+      onClick: changeScreen
+    }, "Show me!"));
     return /* @__PURE__ */ import_react8.default.createElement("div", {
       className: "di-container"
     }, /* @__PURE__ */ import_react8.default.createElement("div", {
@@ -27030,9 +27034,59 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       className: "info"
     }, /* @__PURE__ */ import_react8.default.createElement("p", null, "You've been listening since"), /* @__PURE__ */ import_react8.default.createElement("p", {
       className: "listen-start-info"
-    }, "Mar 2017")))), /* @__PURE__ */ import_react8.default.createElement("div", {
-      style: { display: "flex", flexDirection: "column" }
-    }, /* @__PURE__ */ import_react8.default.createElement("p", null, /* @__PURE__ */ import_react8.default.createElement("strong", null, "Show my obsessions from")), /* @__PURE__ */ import_react8.default.createElement("div", {
+    }, "Mar 2017")))), hasFiles ? dateInputBox : /* @__PURE__ */ import_react8.default.createElement(FileInput, {
+      updateHasFiles: () => setHasFiles(true)
+    })));
+  };
+  function FileInput(props) {
+    const [EMPTY, INVALID, VALID] = ["empty", "invalid", "valid"];
+    const nameReg = /(endsong)_(\d|0[1-9]|[1-9]\d).json/gm;
+    let { updateHasFiles } = props;
+    let [selectionState, setSelectionState] = (0, import_react8.useState)(EMPTY);
+    let [errorMessage, setErrorMessage] = (0, import_react8.useState)("");
+    function validateSelection() {
+      let fileInput = document.getElementById("song-files");
+      let files = Array.from(fileInput.files);
+      let names = files.map((f) => f.name);
+      if (files.length === 0) {
+        setSelectionState(INVALID);
+        setErrorMessage("No files are selected");
+      } else if (!names.every((n) => n.match(nameReg))) {
+        setSelectionState(INVALID);
+        setErrorMessage("File names must have a 'endsong_xx.json' format");
+      } else {
+        setSelectionState(VALID);
+        setErrorMessage("");
+      }
+    }
+    function submitFiles() {
+      let fileInput = document.getElementById("song-files");
+      let files = Array.from(fileInput.files);
+      if (selectionState === VALID)
+        uploadFiles(files).then(updateHasFiles);
+    }
+    return /* @__PURE__ */ import_react8.default.createElement("div", null, /* @__PURE__ */ import_react8.default.createElement("input", {
+      multiple: true,
+      type: "file",
+      name: "songFiles",
+      id: "song-files",
+      onChange: validateSelection,
+      className: selectionState === EMPTY ? "" : "file-input-" + selectionState
+    }), /* @__PURE__ */ import_react8.default.createElement("button", {
+      onClick: submitFiles
+    }, "Upload"), errorMessage !== "" && /* @__PURE__ */ import_react8.default.createElement("span", null, errorMessage));
+  }
+  function DateInput(props) {
+    let { startDate, setStart, endDate, setEnd } = props;
+    function handleStartYMChange(date) {
+      date.setDate(startDate.getDate());
+      setStart(date);
+    }
+    function handleEndYMChange(date) {
+      date.setDate(endDate.getDate());
+      setEnd(date);
+    }
+    return /* @__PURE__ */ import_react8.default.createElement("div", {
       className: "input-container-row"
     }, /* @__PURE__ */ import_react8.default.createElement("div", {
       className: "input-row"
@@ -27056,16 +27110,19 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
         localeUtils,
         onChange: handleEndYMChange
       }) }
-    })), /* @__PURE__ */ import_react8.default.createElement("button", {
-      id: "submit-date-btn",
-      onClick: changeScreen
-    }, "Show me!")))));
-  };
+    })));
+  }
   function validDates(start2, end2) {
     return start2 && end2 && start2 <= end2;
   }
   function customDateFormat(date) {
     return monthNames[date.getMonth() + 1] + " " + date.getDate() + ", " + date.getFullYear();
+  }
+  function uploadFiles(files) {
+    return new Promise((res, rej) => {
+      console.log(`Nothing here yet, but received ${files.length} files.`);
+      res("All good to go");
+    });
   }
   var dateInput_default = DateInputScreen;
 

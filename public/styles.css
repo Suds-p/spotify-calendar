@@ -208,6 +208,15 @@ nav {
   color: #33e844;
 }
 
+/** File input styles */
+.file-input-invalid {
+  box-shadow: 1px 1px 1px 1px red;
+}
+
+.file-input-valid {
+  box-shadow: 1px 1px 1px 1px green;
+}
+
 /** Modifications to the react-day-picker .css styles */
 .DayPicker {
   background: white;
