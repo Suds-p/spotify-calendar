@@ -3,6 +3,7 @@ import { Buffer } from 'buffer';
 import request from 'request';
 import cors from 'cors';
 import secrets from './secrets.js';
+import fs from 'fs';
 
 let token = '';
 let trackOptions = (trackURIs) => ({
@@ -10,7 +11,6 @@ let trackOptions = (trackURIs) => ({
   headers: {'Authorization': 'Bearer ' + token},
   json: true
 });
-let urlCache = {};
 
 const app = express();
 app.use(cors({origin: '*'}));
@@ -74,11 +74,6 @@ app.get('/tracks', (req, res) => {
     }
   });
 });
-
-app.get("/pollcache", (req, res) => {
-  res.send(urlCache);
-});
-
 
 let {client_id, client_secret} = secrets;
 const authOptions = {
