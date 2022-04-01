@@ -11,13 +11,15 @@ This project aims to present a calendar view of the most listened to songs on a 
 4.5 ~~Make build_song_map() a heckin' lot more efficient, por favor.~~
 5. ~~Show more info on hover~~
 6. ~~Add some way for user to import Spotify data (+ add API endpoint for this).~~
-7. Process user data to get most listened songs
+7. ~~Process user data to get most listened songs~~
 8. ~~Loading screen?~~
-9. Maybe add error handling for Python in case data files don't exist.
-10. Move Spotify API code to Python (if possible) so album URLs get pulled in one place.
-11. (Optional) Clicking on date opens song in Spotify app.
-12. ~~Use actual date pickers on first page.~~
-13. Add API endpoint to get start date of user's listening history.
+9. ~~Add error handling for Python in case data files don't exist.~~
+10. ~~Use actual date pickers on first page.~~
+11. Add API endpoint to get start date of user's listening history.
+12. Simple routing for user to go back from calendar to date selection.
+13. App should recognize existing data files on page refresh.
+14. (Optional) Clicking on date opens song in Spotify app.
+15. (Optional) Move Spotify API code to Python so album URLs get pulled in one place.
 
 ### Progress
 - March 15, 2022 - Started project. Pulled album covers from track IDs.

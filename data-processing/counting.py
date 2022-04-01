@@ -19,7 +19,14 @@ create_dataframe():
   Returns a dataframe made of all JSON files available.
 """
 def create_dataframe():
-  data_paths = [("data/" + d) for d in listdir("./data") if ".json" in d]
+  try:
+    data_paths = [("data/" + d) for d in listdir("./data") if ".json" in d]
+  except FileNotFoundError:
+    return
+  
+  if data_paths == []:
+    return
+
   dfs = [pd.read_json(path) for path in data_paths]
   all_spotify_df = pd.concat(dfs, ignore_index=True)
   all_spotify_df["Play-Time"] = pd.to_datetime(all_spotify_df["ts"])
@@ -37,6 +44,8 @@ build_daily_song_map:
   over the entire duration of the user's Spotify history.
 """
 def build_daily_song_map(df):
+  if df is None:
+    return
   g = df.groupby(["play-date", "master_metadata_track_name"]).agg(
     album=pd.NamedAgg(column="master_metadata_album_album_name", aggfunc=max),
     artist=pd.NamedAgg(column="master_metadata_album_artist_name", aggfunc=max),
@@ -59,7 +68,9 @@ def find_all_daily_songs():
   global main_df
   if main_df is None:
     main_df = build_daily_song_map(create_dataframe())
-  return main_df.to_json(orient="index")
+  
+  if main_df is not None:
+    return main_df.to_json(orient="index")
 
 
 """
@@ -71,6 +82,8 @@ def find_range_daily_songs(start_date, end_date):
   global main_df
   if main_df is None:
     main_df = build_daily_song_map(create_dataframe())
-  return main_df[
-    (start_date <= main_df.index) & (main_df.index <= end_date)
-  ].to_json(orient="index")
+  
+  if main_df is not None:
+    return main_df[
+      (start_date <= main_df.index) & (main_df.index <= end_date)
+    ].to_json(orient="index")

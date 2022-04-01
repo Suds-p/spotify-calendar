@@ -10,7 +10,8 @@ app = Flask(__name__)
 
 @app.route("/all-common-tracks")
 def all_common_tracks():
-  return find_all_daily_songs()
+  result = find_all_daily_songs()
+  return result if result else Response("No data available to process", 401)
 
 @app.route("/range-common-tracks")
 def range_common_tracks():
@@ -26,5 +27,5 @@ def range_common_tracks():
     return Response(f"Start comes after end date ({start}, {end})", 400)
   
   result = find_range_daily_songs(start, end)
-  return result
+  return result if result else Response("No data available to process", 401)
   # return f"Congrats, your dates were successfully received! ({start}, {end})"
