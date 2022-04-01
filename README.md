@@ -58,3 +58,6 @@ This project aims to present a calendar view of the most listened to songs on a 
 - March 25, 2022 - Bug fixes, handling API errors, added date pickers to front page.
 - March 27, 2022 - Learned how to read files from POST requests and save to disk.
 - March 29, 2022 - Re-learned how to read files from POST requests using body-parser. Implemented file uploading and had to increase file limits accepted by body-parser.
+- March 31, 2022 - Extremely hard bugs today.
+  - Darn character encoding caught me offguard. Learned that readAsText() takes encoding into account whereas readAsBinaryString() does not.
+  - Redid some Promise code to run sequentially instead of parallely to avoid server overload.

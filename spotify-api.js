@@ -16,7 +16,7 @@ let trackOptions = (trackURIs) => ({
 
 const app = express();
 app.use(cors({origin: '*'}));
-app.use(bp.raw({ limit: "15mb" }));
+app.use(bp.raw({ limit: "15mb", type: ["text/*", "application/octet-stream"] }));
 
 app.get('/', (req, res) => {
   res.send("Oops, nothing to see here. Use /testAlbum or /tracks instead.")

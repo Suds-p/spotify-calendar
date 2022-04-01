@@ -44,7 +44,6 @@ function YearMonthForm({ date, localeUtils, onChange }) {
  * 
  * @param props: should have { setState } which changes the current screen.
  */
-// TODO: Refactor code to put file input in separate component
 let DateInputScreen = (props) => {
   const { setState } = props;
   let [ startDate, setStart ] = useState(new Date());
@@ -135,7 +134,7 @@ function FileInput(props) {
   function submitFiles() {
     let fileInput = document.getElementById("song-files");
     let files = Array.from(fileInput.files);
-    if (selectionState === VALID) uploadFiles(files).then(updateHasFiles);
+    if (selectionState === VALID) uploadFiles(files).then(updateHasFiles).catch(() => console.log("Stopped from reloading page"));
   }
 
   return (
@@ -210,10 +209,43 @@ function customDateFormat(date) {
 }
 
 // Uploads files to custom server via POST requests
-function uploadFiles(files) {
+async function uploadFiles(files) {
+  let shouldStopLoop = false;
+  for (let f of files) {
+    let data = await getBase64(f);
+    let result = await fetchRetry(`http://localhost:5500/uploadFile?filename=${f.name}`, {
+      method: 'POST',
+      body: data
+    }, 5)
+    .catch(() => {shouldStopLoop = true});
+    console.log(result);
+    if (shouldStopLoop) break;
+  }
+}
+
+async function getBase64(file) {
   return new Promise((res, rej) => {
-    console.log(`Nothing here yet, but received ${files.length} files.`);
-    res("All good to go");
+    let reader = new FileReader();
+    reader.readAsText(file);
+    reader.onload = () => {
+      res(reader.result);
+    };
+  })
+}
+
+// Taken from https://dev.to/ycmjason/javascript-fetch-retry-upon-failure-3p6g
+function fetchRetry(url, options, n) {
+  return new Promise((resolve, reject) => {
+    fetch(url, options)
+    .then(resolve)
+    .catch((error) => {
+      if (n === 1) return reject(error);
+      setTimeout(() => {
+        fetchRetry(url, options, n-1)
+        .then(resolve)
+        .catch(reject);
+      }, 200);
+    })
   })
 }
 
