@@ -1053,7 +1053,7 @@
             var dispatcher = resolveDispatcher();
             return dispatcher.useRef(initialValue);
           }
-          function useEffect2(create, deps) {
+          function useEffect3(create, deps) {
             var dispatcher = resolveDispatcher();
             return dispatcher.useEffect(create, deps);
           }
@@ -1623,7 +1623,7 @@
           exports.useCallback = useCallback;
           exports.useContext = useContext;
           exports.useDebugValue = useDebugValue;
-          exports.useEffect = useEffect2;
+          exports.useEffect = useEffect3;
           exports.useImperativeHandle = useImperativeHandle;
           exports.useLayoutEffect = useLayoutEffect2;
           exports.useMemo = useMemo2;
@@ -26990,6 +26990,14 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     let [startDate, setStart] = (0, import_react8.useState)(new Date());
     let [endDate, setEnd] = (0, import_react8.useState)(new Date());
     let [hasFiles, setHasFiles] = (0, import_react8.useState)(false);
+    (0, import_react8.useEffect)(() => {
+      let mounted = true;
+      checkFilesPresent().then((data) => {
+        if (mounted)
+          setHasFiles(data.filesPresent);
+      });
+      return () => mounted = false;
+    });
     function changeScreen() {
       if (validDates(startDate, endDate)) {
         setState({
@@ -27117,6 +27125,11 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   }
   function customDateFormat(date) {
     return monthNames[date.getMonth() + 1] + " " + date.getDate() + ", " + date.getFullYear();
+  }
+  async function checkFilesPresent() {
+    return new Promise((resolve, _) => {
+      fetch("http://localhost:5500/filesPresent").then((data) => data.json()).then(resolve);
+    });
   }
   async function uploadFiles(files) {
     let shouldStopLoop = false;

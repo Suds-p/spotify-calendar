@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 from operator import methodcaller as call_m
+from glob import glob
 # Necessary functions
 from os import listdir
 
@@ -14,7 +15,7 @@ extract_date = lambda x: str(x).split()[0]
 main_df = None
 
 """
-create_dataframe():
+create_dataframe:
   (internal function)
   Returns a dataframe made of all JSON files available.
 """
@@ -87,3 +88,13 @@ def find_range_daily_songs(start_date, end_date):
     return main_df[
       (start_date <= main_df.index) & (main_df.index <= end_date)
     ].to_json(orient="index")
+
+
+"""
+check_files_present:
+Returns True if any user data files are present in the "data" folder
+and False otherwise.
+"""
+def check_files_present():
+  return len(glob("./data/*")) > 0
+

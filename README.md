@@ -17,7 +17,7 @@ This project aims to present a calendar view of the most listened to songs on a 
 10. ~~Use actual date pickers on first page.~~
 11. Add API endpoint to get start date of user's listening history.
 12. Simple routing for user to go back from calendar to date selection.
-13. App should recognize existing data files on page refresh.
+13. ~~App should recognize existing data files on page refresh.~~
 14. (Optional) Clicking on date opens song in Spotify app.
 15. (Optional) Move Spotify API code to Python so album URLs get pulled in one place.
 

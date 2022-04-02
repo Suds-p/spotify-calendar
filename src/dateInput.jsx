@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DayPicker from 'react-day-picker'
 import DPI from 'react-day-picker/DayPickerInput'
 import 'react-day-picker/lib/style.css';
@@ -49,6 +49,15 @@ let DateInputScreen = (props) => {
   let [ startDate, setStart ] = useState(new Date());
   let [ endDate, setEnd ] = useState(new Date());
   let [ hasFiles, setHasFiles ] = useState(false);
+
+  // Derived from https://www.digitalocean.com/community/tutorials/how-to-call-web-apis-with-the-useeffect-hook-in-react
+  useEffect(() => {
+    let mounted = true;
+    checkFilesPresent().then(data => {
+      if (mounted) setHasFiles(data.filesPresent);
+    })
+    return () => mounted = false;
+  })
 
   function changeScreen() {
     if (validDates(startDate, endDate)) {
@@ -206,6 +215,14 @@ function validDates(start, end) {
 // Custom date format for input display
 function customDateFormat(date) {
   return monthNames[date.getMonth() + 1] + " " + date.getDate() + ", " + date.getFullYear();
+}
+
+async function checkFilesPresent() {
+  return new Promise((resolve, _) => {
+    fetch("http://localhost:5500/filesPresent")
+    .then(data => data.json())
+    .then(resolve)
+  })
 }
 
 // Uploads files to custom server via POST requests
