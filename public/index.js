@@ -26990,11 +26990,16 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     let [startDate, setStart] = (0, import_react8.useState)(new Date());
     let [endDate, setEnd] = (0, import_react8.useState)(new Date());
     let [hasFiles, setHasFiles] = (0, import_react8.useState)(false);
+    let [userStartDate, setUserStartDate] = (0, import_react8.useState)("");
     (0, import_react8.useEffect)(() => {
       let mounted = true;
       checkFilesPresent().then((data) => {
         if (mounted)
           setHasFiles(data.filesPresent);
+      });
+      getUserStartDate().then((data) => {
+        if (mounted)
+          setUserStartDate(data.startDate);
       });
       return () => mounted = false;
     });
@@ -27022,6 +27027,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       id: "submit-date-btn",
       onClick: changeScreen
     }, "Show me!"));
+    const startDateFormatted = monthYear(userStartDate);
     return /* @__PURE__ */ import_react8.default.createElement("div", {
       className: "di-container"
     }, /* @__PURE__ */ import_react8.default.createElement("div", {
@@ -27042,7 +27048,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       className: "info"
     }, /* @__PURE__ */ import_react8.default.createElement("p", null, "You've been listening since"), /* @__PURE__ */ import_react8.default.createElement("p", {
       className: "listen-start-info"
-    }, "Mar 2017")))), hasFiles ? dateInputBox : /* @__PURE__ */ import_react8.default.createElement(FileInput, {
+    }, startDateFormatted ? startDateFormatted : "Not sure yet!")))), hasFiles ? dateInputBox : /* @__PURE__ */ import_react8.default.createElement(FileInput, {
       updateHasFiles: () => setHasFiles(true)
     })));
   };
@@ -27131,6 +27137,11 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       fetch("http://localhost:5500/filesPresent").then((data) => data.json()).then(resolve);
     });
   }
+  async function getUserStartDate() {
+    return new Promise((resolve, _) => {
+      fetch("http://localhost:5500/startDate").then((data) => data.json()).then(resolve);
+    });
+  }
   async function uploadFiles(files) {
     let shouldStopLoop = false;
     for (let f of files) {
@@ -27165,6 +27176,13 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
         }, 200);
       });
     });
+  }
+  function monthYear(dateString) {
+    console.log(dateString);
+    if (!dateString || dateString === "")
+      return;
+    const [year, month] = dateString.split("-");
+    return `${monthNames[+month].slice(0, 3)} ${year}`;
   }
   var dateInput_default = DateInputScreen;
 

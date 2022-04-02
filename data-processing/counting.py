@@ -98,3 +98,17 @@ and False otherwise.
 def check_files_present():
   return len(glob("./data/*")) > 0
 
+
+"""
+get_start_date:
+Returns first date in user's listening history as a string.
+String is returned in "yyyy-mm-dd" format.
+If history not available, returns None.
+"""
+def get_start_date():
+  global main_df
+  if main_df is None:
+    main_df = build_daily_song_map(create_dataframe())
+
+  if main_df is not None:
+    return main_df.iloc[0].name

@@ -49,12 +49,16 @@ let DateInputScreen = (props) => {
   let [ startDate, setStart ] = useState(new Date());
   let [ endDate, setEnd ] = useState(new Date());
   let [ hasFiles, setHasFiles ] = useState(false);
+  let [ userStartDate, setUserStartDate ] = useState("");
 
   // Derived from https://www.digitalocean.com/community/tutorials/how-to-call-web-apis-with-the-useeffect-hook-in-react
   useEffect(() => {
     let mounted = true;
     checkFilesPresent().then(data => {
       if (mounted) setHasFiles(data.filesPresent);
+    })
+    getUserStartDate().then(data => {
+      if (mounted) setUserStartDate(data.startDate);
     })
     return () => mounted = false;
   })
@@ -83,6 +87,8 @@ let DateInputScreen = (props) => {
       <button id="submit-date-btn" onClick={changeScreen}>Show me!</button>
     </div>);
 
+  const startDateFormatted = monthYear(userStartDate);
+
   return (
     <div className="di-container">
       <div className="input-field-container">
@@ -103,7 +109,7 @@ let DateInputScreen = (props) => {
             <div className="info">
               <p>You've been listening since</p>
               <p className="listen-start-info">
-                Mar 2017
+                {startDateFormatted ? startDateFormatted : "Not sure yet!"}
               </p>
             </div>
           </div>
@@ -225,6 +231,14 @@ async function checkFilesPresent() {
   })
 }
 
+async function getUserStartDate() {
+  return new Promise((resolve, _) => {
+    fetch("http://localhost:5500/startDate")
+    .then(data => data.json())
+    .then(resolve)
+  })
+}
+
 // Uploads files to custom server via POST requests
 async function uploadFiles(files) {
   let shouldStopLoop = false;
@@ -264,6 +278,13 @@ function fetchRetry(url, options, n) {
       }, 200);
     })
   })
+}
+
+function monthYear(dateString) {
+  console.log(dateString);
+  if (!dateString || dateString === "") return;
+  const [year, month] = dateString.split("-");
+  return `${monthNames[+month].slice(0, 3)} ${year}`
 }
 
 export default DateInputScreen;

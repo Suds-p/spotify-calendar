@@ -1,5 +1,5 @@
 from flask import Flask, request, Response
-from counting import find_all_daily_songs, find_range_daily_songs, check_files_present
+from counting import find_all_daily_songs, find_range_daily_songs, check_files_present, get_start_date
 from re import match
 
 # Global variables
@@ -32,3 +32,8 @@ def range_common_tracks():
 @app.route("/files-present")
 def are_files_present():
   return {"filesPresent": check_files_present()}
+
+@app.route("/start-date")
+def start_date():
+  res = get_start_date()
+  return {"startDate": res} if res else Response("No data available to process", 401)

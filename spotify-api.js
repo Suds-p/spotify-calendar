@@ -94,6 +94,17 @@ app.get('/filesPresent', (_, res) => {
   })
 })
 
+app.get('/startDate', (_, res) => {
+  request.get({
+    url: "http://localhost:5000/start-date"
+  }, (error, response, data) => {
+    if (error || response.statusCode >= 400) {
+      return res.status(400).json({message: "Failed to communicate with backend", error});
+    }
+    res.send(data);
+  })
+})
+
 let {client_id, client_secret} = secrets;
 const authOptions = {
   url: 'https://accounts.spotify.com/api/token',
