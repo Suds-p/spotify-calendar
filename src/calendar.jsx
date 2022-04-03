@@ -2,6 +2,7 @@ import React from 'react';
 import MonthView from './month';
 import Loader from './loading';
 import OfflineScreen from './offline';
+import { DATE_INPUT } from './app'
 
 export const monthNames = ["", "January", "February", "March", "April", "May", "June",
 "July", "August", "September", "October", "November", "December"
@@ -69,15 +70,30 @@ class CalendarScreen extends React.Component{
   
   // Set up initial objects for each month in range
   render() {
+    const backButton = (<button
+      onClick={() => this.props.setState({screen: DATE_INPUT})}
+      style={{
+        background: "cornflowerblue", 
+        border: "none",
+        padding: "15px",
+        maxWidth: "180px",
+        borderRadius: "10px",
+        fontWeight: "bold",
+        fontSize: "16px"
+      }}>&#171; Go back</button>);
+
     return this.state.loading ? <Loader /> :
       this.state.offline ? <OfflineScreen /> : (
-      <main id="calendarScreen">
-       {this.mRange.map(info => 
-          <MonthView 
-            year={info[0]}
-            month={info[1]}
-            key={info[0]+'-'+info[1]}
-            viewData={this.state.viewData[info[0]+'-'+info[1]]} />)}
+      <main style={{display: "flex", flexDirection: "column", padding: "10px"}}>
+        {backButton}
+        <div id="calendarScreen">
+          {this.mRange.map(info => 
+            <MonthView 
+              year={info[0]}
+              month={info[1]}
+              key={info[0]+'-'+info[1]}
+              viewData={this.state.viewData[info[0]+'-'+info[1]]} />)}
+        </div>
       </main>
     );
   }

@@ -26930,14 +26930,28 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       });
     }
     render() {
+      const backButton = /* @__PURE__ */ import_react7.default.createElement("button", {
+        onClick: () => this.props.setState({ screen: DATE_INPUT }),
+        style: {
+          background: "cornflowerblue",
+          border: "none",
+          padding: "15px",
+          maxWidth: "180px",
+          borderRadius: "10px",
+          fontWeight: "bold",
+          fontSize: "16px"
+        }
+      }, "\xAB Go back");
       return this.state.loading ? /* @__PURE__ */ import_react7.default.createElement(loading_default, null) : this.state.offline ? /* @__PURE__ */ import_react7.default.createElement(ErrorScreen, null) : /* @__PURE__ */ import_react7.default.createElement("main", {
+        style: { display: "flex", flexDirection: "column", padding: "10px" }
+      }, backButton, /* @__PURE__ */ import_react7.default.createElement("div", {
         id: "calendarScreen"
       }, this.mRange.map((info) => /* @__PURE__ */ import_react7.default.createElement(month_default, {
         year: info[0],
         month: info[1],
         key: info[0] + "-" + info[1],
         viewData: this.state.viewData[info[0] + "-" + info[1]]
-      })));
+      }))));
     }
   };
   function getMonthRange(y1, m1, y2, m2) {
@@ -27178,7 +27192,6 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     });
   }
   function monthYear(dateString) {
-    console.log(dateString);
     if (!dateString || dateString === "")
       return;
     const [year, month] = dateString.split("-");
@@ -27203,7 +27216,8 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       startYear,
       startMonth,
       endYear,
-      endMonth
+      endMonth,
+      setState
     }) : screen === DATE_INPUT && /* @__PURE__ */ import_react9.default.createElement(dateInput_default, {
       setState
     }));

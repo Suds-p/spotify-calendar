@@ -27,7 +27,8 @@ export default function App() {
             startYear={startYear}
             startMonth={startMonth}
             endYear={endYear}
-            endMonth={endMonth} /> :
+            endMonth={endMonth}
+            setState={setState} /> :
         (screen === DATE_INPUT) && <DateInputScreen setState={setState} />
       }
     </div>

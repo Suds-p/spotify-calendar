@@ -16,7 +16,7 @@ This project aims to present a calendar view of the most listened to songs on a 
 9. ~~Add error handling for Python in case data files don't exist.~~
 10. ~~Use actual date pickers on first page.~~
 11. ~~Add API endpoint to get start date of user's listening history.~~
-12. Simple routing for user to go back from calendar to date selection.
+12. ~~Simple routing for user to go back from calendar to date selection.~~
 13. ~~App should recognize existing data files on page refresh.~~
 14. (Optional) Clicking on date opens song in Spotify app.
 15. (Optional) Move Spotify API code to Python so album URLs get pulled in one place.
@@ -63,3 +63,4 @@ This project aims to present a calendar view of the most listened to songs on a 
 - March 31, 2022 - Extremely hard bugs today.
   - Darn character encoding caught me offguard. Learned that readAsText() takes encoding into account whereas readAsBinaryString() does not.
   - Redid some Promise code to run sequentially instead of parallely to avoid server overload.
+- April 2, 2022 - Adding in last few features of MVP.

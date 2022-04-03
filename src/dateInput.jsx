@@ -281,7 +281,6 @@ function fetchRetry(url, options, n) {
 }
 
 function monthYear(dateString) {
-  console.log(dateString);
   if (!dateString || dateString === "") return;
   const [year, month] = dateString.split("-");
   return `${monthNames[+month].slice(0, 3)} ${year}`
