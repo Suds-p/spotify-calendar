@@ -1,25 +1,7 @@
 # Spotify Calendar (Cal)
-One of my children that I'm still currently gestating.
-This project aims to present a calendar view of the most listened to songs on a user's Spotify for as long as they've been listening. Primary function of this README is to be a todo list really so don't expect much explanation here.
+Screenshots to come soon...
+This project takes in a user's Spotify listening history (supplied as external files) and renders a calendar view of the most listened-to songs on their Spotify for as long as they've been listening. User chooses a specific date range to view songs over. Coming soon, user will also be able to choose between seeing most common songs _or_ artists. 
 
-### Todos:
-0. ~~Replace everything with React components (merge body.jsx and main.js)~~
-1. ~~Render multiple months within a certain date range~~
-2. ~~Add initial screen to ask for date range~~
-3. ~~Actually switch from initial to calendar screen~~
-4. ~~Change own API to return more info on songs (name, artist, # of listens, etc.)~~
-4.5 ~~Make build_song_map() a heckin' lot more efficient, por favor.~~
-5. ~~Show more info on hover~~
-6. ~~Add some way for user to import Spotify data (+ add API endpoint for this).~~
-7. ~~Process user data to get most listened songs~~
-8. ~~Loading screen?~~
-9. ~~Add error handling for Python in case data files don't exist.~~
-10. ~~Use actual date pickers on first page.~~
-11. ~~Add API endpoint to get start date of user's listening history.~~
-12. ~~Simple routing for user to go back from calendar to date selection.~~
-13. ~~App should recognize existing data files on page refresh.~~
-14. (Optional) Clicking on date opens song in Spotify app.
-15. (Optional) Move Spotify API code to Python so album URLs get pulled in one place.
 
 ### Progress
 - March 15, 2022 - Started project. Pulled album covers from track IDs.
@@ -52,7 +34,7 @@ This project aims to present a calendar view of the most listened to songs on a 
   - Changed Calendar to be class component with state so incoming API responses are stored.
   - Tweaked backend to send data in right format
   - Lifecycle methods are very helpful.
-  - Realized app should probably be caching URLs to avoid high API call rates.
+  - Realized app should be caching URLs to avoid high API call rates.
 - March 24, 2022 - Mostly caching day.
   - Added URL cache for album covers.
   - Restyled months to fit side by side.
