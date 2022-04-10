@@ -52,7 +52,7 @@ class CalendarScreen extends React.Component{
       this.mRange.map(info => {
         let [date1, date2] = [`${info[0]}-${info[1]}-01`, `${info[0]}-${info[1]}-31`];
         return new Promise((res, rej) => {
-          fetch(`http://localhost:5500/tracks?start=${date1}&end=${date2}`)
+          fetch(`http://localhost:5000/range-common-tracks?start=${date1}&end=${date2}`)
           .then(resp => resp.json())
           .then(data => res(data))
           .catch(err => rej(`Server is likely offline: ${err}`))

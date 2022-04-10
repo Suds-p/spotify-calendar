@@ -225,7 +225,7 @@ function customDateFormat(date) {
 
 async function checkFilesPresent() {
   return new Promise((resolve, _) => {
-    fetch("http://localhost:5500/filesPresent")
+    fetch("http://localhost:5000/files-present")
     .then(data => data.json())
     .then(resolve)
   })
@@ -233,7 +233,7 @@ async function checkFilesPresent() {
 
 async function getUserStartDate() {
   return new Promise((resolve, _) => {
-    fetch("http://localhost:5500/startDate")
+    fetch("http://localhost:5000/start-date")
     .then(data => data.json())
     .then(resolve)
   })
@@ -244,7 +244,7 @@ async function uploadFiles(files) {
   let shouldStopLoop = false;
   for (let f of files) {
     let data = await getBase64(f);
-    let result = await fetchRetry(`http://localhost:5500/uploadFile?filename=${f.name}`, {
+    let result = await fetchRetry(`http://localhost:5000/upload-file?filename=${f.name}`, {
       method: 'POST',
       body: data
     }, 5)
