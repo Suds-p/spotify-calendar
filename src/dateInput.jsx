@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import DayPicker from 'react-day-picker'
 import DPI from 'react-day-picker/DayPickerInput'
 import 'react-day-picker/lib/style.css';
 import { CALENDAR } from './app';
 import { monthNames } from './calendar';
 const DayPickerInput = DPI.__esModule ? DPI.default : DPI
+
+const BACKEND_URL = 'http://localhost:5000';
 
 // Derived from https://react-day-picker.js.org/examples/elements-year-navigation
 function YearMonthForm({ date, localeUtils, onChange }) {
@@ -122,7 +123,11 @@ let DateInputScreen = (props) => {
   );
 }
 
+/**
+ * Subview for letting users pick data files from their system.
+*/
 function FileInput(props) {
+  // State names for styling
   const [EMPTY, INVALID, VALID] = ["empty", "invalid", "valid"];
   const nameReg = /(endsong)_(\d|0[1-9]|[1-9]\d).json/gm;
   let { updateHasFiles } = props;
@@ -149,7 +154,10 @@ function FileInput(props) {
   function submitFiles() {
     let fileInput = document.getElementById("song-files");
     let files = Array.from(fileInput.files);
-    if (selectionState === VALID) uploadFiles(files).then(updateHasFiles).catch(() => console.log("Stopped from reloading page"));
+    if (selectionState === VALID)
+      uploadFiles(files)
+      .then(updateHasFiles)
+      .catch(() => console.log("Stopped from reloading page"));
   }
 
   return (
@@ -233,7 +241,7 @@ async function checkFilesPresent() {
 
 async function getUserStartDate() {
   return new Promise((resolve, _) => {
-    fetch("http://localhost:5000/start-date")
+    fetch(`${BACKEND_URL}/start-date`)
     .then(data => data.json())
     .then(resolve)
   })
@@ -243,24 +251,25 @@ async function getUserStartDate() {
 async function uploadFiles(files) {
   let shouldStopLoop = false;
   for (let f of files) {
-    let data = await getBase64(f);
-    let result = await fetchRetry(`http://localhost:5000/upload-file?filename=${f.name}`, {
-      method: 'POST',
-      body: data
-    }, 5)
-    .catch(() => {shouldStopLoop = true});
-    console.log(result);
-    if (shouldStopLoop) break;
+    try {
+      let data = await getBase64(f);
+      let result = await fetchRetry(`${BACKEND_URL}/upload-file?filename=${f.name}`, {
+        method: 'POST',
+        body: data
+      }, 5)
+      if (shouldStopLoop) break;
+    } catch (error) {
+      shouldStopLoop = true;
+    }
   }
 }
 
+// Returns binary data of given file name as a base64 string
 async function getBase64(file) {
-  return new Promise((res, rej) => {
+  return new Promise((resolve, _) => {
     let reader = new FileReader();
     reader.readAsText(file);
-    reader.onload = () => {
-      res(reader.result);
-    };
+    reader.onload = () => resolve(reader.result);
   })
 }
 
@@ -280,6 +289,7 @@ function fetchRetry(url, options, n) {
   })
 }
 
+// Reformats a string like "2018-04" into "April 2018"
 function monthYear(dateString) {
   if (!dateString || dateString === "") return;
   const [year, month] = dateString.split("-");
