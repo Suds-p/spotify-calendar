@@ -5,7 +5,7 @@
   "main": "spotify.js",
   "type": "module",
   "scripts": {
-    "devStart": "nodemon spotify-api.js",
+    "start": "cd data-processing/ && flask run",
     "build": "esbuild --bundle src/index.jsx --outfile=public/index.js"
   },
   "author": "",
