@@ -12,5 +12,4 @@
 * esbuild
 
 ## Coming Soon
-- Adding screenshots to the README
 - Including the option to see most common artists in a day. Users can only see most common songs so far.
