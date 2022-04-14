@@ -25958,12 +25958,12 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       Promise.all(this.mRange.map((info) => {
         let [date1, date2] = [`${info[0]}-${info[1]}-01`, `${info[0]}-${info[1]}-31`];
         return new Promise((res, rej) => {
-          fetch(`http://localhost:5000/range-common-tracks?start=${date1}&end=${date2}`).then((resp) => resp.json()).then((data) => res(data)).catch((err) => rej(`Server is likely offline: ${err}`));
+          fetch(`http://localhost:5000/tracks?start=${date1}&end=${date2}`).then((resp) => resp.json()).then((data) => res(data)).catch((err) => rej(`Server is likely offline: ${err}`));
         });
       })).then((results) => {
         keys.map((k, i) => tempState[k] = results[i]);
         this.setState({ loading: false, offline: false, viewData: tempState });
-      }).catch((err) => {
+      }).catch((_) => {
         this.setState({ loading: false, offline: true });
       });
     }
@@ -26198,10 +26198,9 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     let shouldStopLoop = false;
     for (let f of files) {
       try {
-        let data = await getBase64(f);
-        let result = await fetchRetry(`${BACKEND_URL}/upload-file?filename=${f.name}`, {
+        await fetchRetry(`${BACKEND_URL}/data-file?filename=${f.name}`, {
           method: "POST",
-          body: data
+          body: await getBase64(f)
         }, 5);
         if (shouldStopLoop)
           break;

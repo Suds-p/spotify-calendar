@@ -4,7 +4,7 @@ from sys import exit
 from flask import Flask, request, Response
 from flask_cors import CORS
 import json
-from counting import find_all_daily_songs, find_range_daily_songs, check_files_present, get_start_date
+from counting import find_daily_songs, check_files_present, get_start_date
 import requests
 
 # Global variables
@@ -35,25 +35,21 @@ TOKEN = r.json()['access_token']
 app = Flask(__name__)
 CORS(app, resources={'/*': {'origins': '*'}})
 
-@app.route("/all-common-tracks")
-def all_common_tracks():
-  result = find_all_daily_songs()
-  return result if result else Response("No data available to process", 401)
 
-@app.route("/range-common-tracks")
-def range_common_tracks():
+@app.route("/tracks")
+def get_tracks():
   # Check that parameters are valid
   start = request.args.get("start", default="2001-01-01", type=str)
   end = request.args.get("end", default="2001-01-01", type=str)
 
-  # Has correct date format
+  # Ensure correct format and start comes before end date
   if not match(DATE_REGEX, start) or not match(DATE_REGEX, end):
     return Response(f"Dates have incorrect format ({start}, {end})", 400)
-  # Start comes before end date
   elif start > end:
     return Response(f"Start comes after end date ({start}, {end})", 400)
   
-  result = find_range_daily_songs(start, end)
+  end = "" if end == "2001-01-01" else end
+  result = find_daily_songs(start, end)
   if not result:
     return Response("No data available to process", 401)
 
@@ -83,7 +79,7 @@ def start_date():
   res = get_start_date()
   return {"startDate": res} if res else Response("No data available to process", 401)
 
-@app.route("/upload-file", methods=['POST'])
+@app.route("/data-file", methods=['POST'])
 def upload_file():
   filename = request.args.get("filename", default="", type=str)
   if filename == "":

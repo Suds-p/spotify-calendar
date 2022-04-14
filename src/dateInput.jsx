@@ -252,10 +252,9 @@ async function uploadFiles(files) {
   let shouldStopLoop = false;
   for (let f of files) {
     try {
-      let data = await getBase64(f);
-      let result = await fetchRetry(`${BACKEND_URL}/upload-file?filename=${f.name}`, {
+      await fetchRetry(`${BACKEND_URL}/data-file?filename=${f.name}`, {
         method: 'POST',
-        body: data
+        body: await getBase64(f)
       }, 5)
       if (shouldStopLoop) break;
     } catch (error) {

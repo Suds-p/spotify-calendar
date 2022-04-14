@@ -61,30 +61,27 @@ def build_daily_song_map(df):
 
 
 """
-find_all_daily_songs:
-  Returns a JSON map of dates to most listened songs on those dates 
-  for the entire duration of the user's Spotify history.
+get_today_date_string:
+  (internal function)
+  Returns today's date as a string in the format 'YYYY-mm-dd'.
 """
-def find_all_daily_songs():
-  global main_df
-  if main_df is None:
-    main_df = build_daily_song_map(create_dataframe())
-  
-  if main_df is not None:
-    return main_df.to_json(orient="index")
+def get_today_date_string():
+  return datetime.today().strftime('%Y-%m-%d')
 
 
 """
 find_range_daily_songs:
   Returns a JSON map of dates to most listened songs on those dates
   for the duration of a specific range of the user's history.
+  If end_date is an empty string, it defaults to today's date.
 """
-def find_range_daily_songs(start_date, end_date):
+def find_daily_songs(start_date, end_date):
   global main_df
   if main_df is None:
     main_df = build_daily_song_map(create_dataframe())
   
   if main_df is not None:
+    end_date = get_today_date_string() if end_date == "" else end_date
     return main_df[
       (start_date <= main_df.index) & (main_df.index <= end_date)
     ].to_json(orient="index")
