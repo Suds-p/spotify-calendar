@@ -4,7 +4,7 @@ from sys import exit
 from flask import Flask, request, Response
 from flask_cors import CORS
 import json
-from counting import find_daily_songs, check_files_present, get_start_date
+from counting import find_daily_songs, find_daily_artists, check_files_present, get_start_date
 import requests
 
 # Global variables
@@ -67,6 +67,50 @@ def get_tracks():
   album_URLs = [d['album']['images'][1]['url'] for d in songData]
   for i, k in enumerate(keys):
     result[k]['album_url'] = album_URLs[i]
+
+  return result
+
+@app.route("/artists")
+def get_artists():
+  # Check that parameters are valid
+  start = request.args.get("start", default="2001-01-01", type=str)
+  end = request.args.get("end", default="2001-01-01", type=str)
+
+  # Ensure correct format and start comes before end date
+  if not match(DATE_REGEX, start) or not match(DATE_REGEX, end):
+    return Response(f"Dates have incorrect format ({start}, {end})", 400)
+  elif start > end:
+    return Response(f"Start comes after end date ({start}, {end})", 400)
+  
+  end = "" if end == "2001-01-01" else end
+  result = find_daily_artists(start, end)
+  if not result:
+    return Response("No data available to process", 401)
+
+  # Add artist image URLs from Spotify API
+  result = json.loads(result)
+  keys = list(result.keys())
+  track_URIs = [result[k]["track_uri"] for k in keys]
+  r = requests.get(
+    f"https://api.spotify.com/v1/tracks?ids={','.join(track_URIs)}",
+    headers={'Authorization': 'Bearer ' + TOKEN})
+  if r.status_code >= 400:
+    return Response("Could not retrieve track info: " + r.text, 402)
+
+  songData = r.json()['tracks']
+  artist_IDs = [d['album']['artists'][0]['id'] for d in songData]
+
+  r = requests.get(
+    f"https://api.spotify.com/v1/artists?ids={','.join(artist_IDs)}",
+    headers={'Authorization': 'Bearer ' + TOKEN})
+  if r.status_code >= 400:
+    return Response("Could not retrieve artist info: " + r.text, 402)
+
+  artistData = r.json()['artists']
+  artist_URLs = [d['images'][1]['url'] for d in artistData]
+
+  for i, k in enumerate(keys):
+    result[k]['artist_url'] = artist_URLs[i]
 
   return result
 
