@@ -1,10 +1,10 @@
 * {
   margin: 0;
   padding: 0;
+  font-family: 'Raleway', sans-serif;
 }
 
 html, body{
-  font-family: 'Fredoka', sans-serif;
   min-height: 100%;
 }
 
@@ -24,7 +24,6 @@ nav {
   height: 80px;
   padding: 0 30px;
   background: #1bb92b;
-  font-family: 'Raleway';
   font-weight: 800;
   font-size: 32px;
   color: white;
@@ -79,7 +78,6 @@ nav {
   align-items: center;
   min-height: 100%;
   margin-top: -90px;
-  font-family: 'Raleway';
 }
 
 .input-field-container {
@@ -186,7 +184,6 @@ nav {
   font-weight: bold;
   font-size: larger;
   align-self: center;
-  font-family: 'Raleway';
 }
 
 #submit-date-btn:focus {
