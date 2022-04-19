@@ -22695,7 +22695,15 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
 
   // src/header.jsx
   var import_react = __toESM(require_react(), 1);
-  var header_default = Header = () => /* @__PURE__ */ import_react.default.createElement("nav", null, "Spotify Song Calendar");
+  var header_default = Header = () => /* @__PURE__ */ import_react.default.createElement("nav", null, /* @__PURE__ */ import_react.default.createElement("h3", null, "Spotify Song Calendar"), /* @__PURE__ */ import_react.default.createElement("div", {
+    className: "links"
+  }, /* @__PURE__ */ import_react.default.createElement("a", {
+    href: "#"
+  }, /* @__PURE__ */ import_react.default.createElement("h4", null, "About")), /* @__PURE__ */ import_react.default.createElement("a", {
+    href: "#"
+  }, /* @__PURE__ */ import_react.default.createElement("h4", null, "How do I get my files?")), /* @__PURE__ */ import_react.default.createElement("a", {
+    href: "#"
+  }, /* @__PURE__ */ import_react.default.createElement("h4", null, "Contact"))));
 
   // src/calendar.jsx
   var import_react7 = __toESM(require_react(), 1);
@@ -26003,7 +26011,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   }
   var calendar_default = CalendarScreen;
 
-  // src/dateInput.jsx
+  // src/home.jsx
   var import_react8 = __toESM(require_react(), 1);
   var import_DayPickerInput = __toESM(require_DayPickerInput2(), 1);
   var DayPickerInput = import_DayPickerInput.default.__esModule ? import_DayPickerInput.default.default : import_DayPickerInput.default;
@@ -26233,7 +26241,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     const [year, month] = dateString.split("-");
     return `${monthNames[+month].slice(0, 3)} ${year}`;
   }
-  var dateInput_default = DateInputScreen;
+  var home_default = DateInputScreen;
 
   // src/app.jsx
   var CALENDAR = "calendar";
@@ -26254,7 +26262,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       endYear,
       endMonth,
       setState
-    }) : screen === DATE_INPUT && /* @__PURE__ */ import_react9.default.createElement(dateInput_default, {
+    }) : screen === DATE_INPUT && /* @__PURE__ */ import_react9.default.createElement(home_default, {
       setState
     }));
   }

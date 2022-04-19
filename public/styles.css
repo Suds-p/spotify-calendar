@@ -8,6 +8,10 @@ html, body{
   min-height: 100%;
 }
 
+
+/*************
+  Structure
+**************/
 #root {
   position: absolute;
   inset: 0;
@@ -19,16 +23,39 @@ html, body{
 
 nav {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
+  row-gap: 20px;
   height: 80px;
   padding: 0 30px;
-  background: #1bb92b;
-  font-weight: 800;
-  font-size: 32px;
+  background: black;
   color: white;
 }
 
+nav .links {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  padding: 0 15px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+nav a:hover {
+  background: white;
+  color: black;
+  transition: background .25s;
+}
+
+/*******************
+  Calendar Screen
+********************/
 #calendarScreen {
   display: flex;
   justify-content: space-evenly;
@@ -71,6 +98,10 @@ nav {
   width: 100%;
 }
 
+
+/*******************
+  Date Input Screen
+********************/
 .di-container, .screen-container {
   display: flex;
   flex-direction: column;
@@ -100,14 +131,32 @@ nav {
   padding: 5px;
 }
 
-.input-field-container .hook-text {
-  color: black;
+/*******************
+  Typography
+********************/
+h1 {
+  font-size: 32px;
   font-weight: 800;
-  font-size: 36px;
 }
 
-.hook-emphasis {
-  color: white;
+h2 {
+  font-size: 26px;
+  font-weight: normal;
+}
+
+h3 {
+  font-size: 26px;
+  font-weight: bold;
+}
+
+h4 {
+  font-size: 18px;
+  font-weight: normal;
+}
+
+sub {
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .input-field-container .subtitle {
@@ -200,12 +249,25 @@ nav {
   border: 1px solid gray;
 }
 
+.input-field-container .hook-text {
+  color: black;
+  font-weight: 800;
+  font-size: 36px;
+}
+
+.hook-emphasis {
+  color: white;
+}
+
 .tooltip-title {
   font-weight: 800;
   color: #33e844;
 }
 
-/** File input styles */
+
+/*******************
+  File Input
+********************/
 .file-input-invalid {
   box-shadow: 1px 1px 1px 1px red;
 }
@@ -214,12 +276,18 @@ nav {
   box-shadow: 1px 1px 1px 1px green;
 }
 
-/** Modifications to the react-day-picker .css styles */
+
+/***********************************
+  "react-day-picker" Modifications
+************************************/
 .DayPicker {
   background: white;
 }
 
-/** Loading animations */
+
+/*********************
+  Loading animations
+**********************/
 .loading-center {
   /* height: 100vh; */
   display: flex;
