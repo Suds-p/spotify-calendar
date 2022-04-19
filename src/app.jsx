@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Header from './header';
 import CalendarScreen from "./calendar";
-import DateInputScreen from './dateInput';
+import DateInputScreen from './home';
 
 export const CALENDAR = "calendar";
 export const DATE_INPUT = "date_input";
