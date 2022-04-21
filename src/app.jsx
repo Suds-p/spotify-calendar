@@ -4,10 +4,10 @@ import CalendarScreen from "./calendar";
 import DateInputScreen from './home';
 
 export const CALENDAR = "calendar";
-export const DATE_INPUT = "date_input";
+export const HOME = "home";
 
 const INITIAL_STATE = {
-  screen: DATE_INPUT,
+  screen: HOME,
   startYear: 0,
   startMonth: 0,
   endYear: 0,
@@ -19,7 +19,7 @@ export default function App() {
   let {screen, startYear, startMonth, endYear, endMonth} = state;
 
   return (
-    <div>
+    <div style={{"overflow": "scroll"}}>
       <Header />
       {
         (screen === CALENDAR) ?
@@ -29,7 +29,7 @@ export default function App() {
             endYear={endYear}
             endMonth={endMonth}
             setState={setState} /> :
-        (screen === DATE_INPUT) && <DateInputScreen setState={setState} />
+        (screen === HOME) && <DateInputScreen setState={setState} />
       }
     </div>
   );

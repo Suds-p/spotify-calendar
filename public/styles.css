@@ -2,6 +2,11 @@
   margin: 0;
   padding: 0;
   font-family: 'Raleway', sans-serif;
+  --orange: #F6A833;
+  --orange-shadow: #EA9414;
+  --upload-border-color: #032C02;
+  --bg-gradient-light: #06CE6E;
+  --bg-gradient-dark: #04732A;
 }
 
 html, body{
@@ -15,6 +20,10 @@ html, body{
 #root {
   position: absolute;
   inset: 0;
+  background: linear-gradient(
+    142deg, 
+    var(--bg-gradient-light) 15%, 
+    var(--bg-gradient-dark) 85%);
 }
 
 #root > div {
@@ -53,6 +62,83 @@ nav a:hover {
   transition: background .25s;
 }
 
+.home-container {
+  padding: 0 50px;
+  height: 100%;
+  display: flex;
+}
+
+.home-container .col {
+  width: 50%;
+  padding-top: 80px;
+}
+
+.interactable {
+  position: relative;
+  width: 550px;
+  height: 350px;
+  margin-bottom: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  border-radius: 40px;
+  background: rgba(0, 0, 0, .32);
+}
+
+/*******************
+  Home Screen
+********************/
+.home-text {
+  padding-right: 20px;
+}
+
+.home-text span {
+  color: white;
+}
+
+.home-text h1 {
+  margin-bottom: 20px;
+}
+
+/*******************
+  Date Input Screen
+********************/
+
+.date-input {
+  width: 100%;
+  background: white;
+  color: black;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 25px;
+  box-sizing: border-box;
+}
+
+.date-input .row {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.date-input .row .bar {
+  margin: 0 8px;
+}
+
+.date-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.di-container, .screen-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+  margin-top: -90px;
+}
+
 /*******************
   Calendar Screen
 ********************/
@@ -79,11 +165,13 @@ nav a:hover {
 }
 
 .spacer {
-  border: 1px solid lightgrey;
+  border: 1px solid rgba(0, 0, 0, .5);
+  background: rgba(0,0,0,0.2);
 }
 
 .date {
   border: 1px solid black;
+  background: white;
 }
 
 .slot {
@@ -100,42 +188,201 @@ nav a:hover {
 
 
 /*******************
-  Date Input Screen
+  File Input
 ********************/
-.di-container, .screen-container {
+.file-upload-wrapper {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  min-height: 100%;
-  margin-top: -90px;
 }
 
-.input-field-container {
-  width: 100%;
-  max-width: 700px;
-  min-height: 400px;
-  background: #E86252;
-  padding: 30px;
+.file-upload {
+  border: 12px dashed var(--upload-border-color);
+  transition: background 0.2s;
+}
+
+/* only change hover style when upload hasn't completed yet */
+.file-upload:not(.files-dropped):hover,
+.file-upload:not(.files-uploaded):hover {
+  background: rgba(0, 0, 0, .45);
+  transition: background 0.2s;
+}
+
+.file-upload input {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  opacity: 0;
+}
+
+.file-upload-wrapper button {
+  width: fit-content;
+}
+
+.file-upload .content {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  align-items: center;
 }
 
-.input-field-container > .info {
+.upload-text {
+  text-align: center;
+}
+
+.upload-empty,
+.upload-invalid,
+.upload-valid {
+  display: none;
+}
+
+.received-file-list {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(6, 40px);
+  align-content: space-evenly;
+}
+
+.file-icons {
+  position: relative;
+  text-align: center;
+  height: 100px;
+  width: 120px;
+  margin-bottom: 40px;
+}
+
+/* Icons */
+.file-icons img {
+  width: 70px;
+  position: absolute;
+  transform: translate(-50%);
+}
+
+.file-icons img:nth-child(1) {
+  left: 0;
+  transform: translate(-50%) rotate(-30deg);
+  transition: transform .2s;
+}
+
+.file-icons img:nth-child(2) {
+  bottom: 40%;
+  transition: bottom 0.2s;
+}
+
+.file-icons img:nth-child(3) {
+  right: -50%;
+  transform: translate(-50%) rotate(30deg);
+  transition: transform .2s;
+}
+
+/* Icon hover animation */
+.file-icons:hover img:nth-child(1) {
+  transform: translateX(-50%) rotate(-45deg);
+  transition: transform .2s;
+}
+
+.file-icons:hover img:nth-child(2) {
+  bottom: 50%;
+  transition: bottom 0.2s;
+}
+
+.file-icons:hover img:nth-child(3) {
+  transform: translate(-50%) rotate(45deg);
+  transition: transform .2s;
+}
+
+
+/*******************
+  Simple Components
+********************/
+.bold-btn {
+  padding: 15px;
+  border-radius: 25px;
+  border: none;
+  background: white;
+  color: black;
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: 4px 4px 4px 0 rgba(0, 0, 0, 0.5);
+  transition: background .2s, color .2s;
+  /* position: absolute; */
+}
+
+.bold-btn:hover {
+  top: -10px;
+  background: #ccc;
+  color: white;
+  transition: background .2s, color .2s;
+}
+
+.received-file-list .file {
+  margin: 0 10px;
+  border-radius: 8px;
   display: flex;
+  align-items: center;
+  padding: 10px;
 }
 
-.input-field-container .lg-col {
-  max-width: 60%;
-  padding: 5px;
+.received-file-list .files-unloaded.file {
+  background: white;
+  color: black;
 }
+
+.received-file-list .files-uploading.file {
+  font-weight: bold;
+  background: repeating-linear-gradient(
+    -55deg,
+    var(--orange-shadow),
+    var(--orange-shadow) 10px,
+    var(--orange) 10px,
+    var(--orange) 20px
+  );
+}
+
+.received-file-list .files-uploaded.file {
+  background: white;
+  color: black;
+}
+
+.received-file-list .files-uploaded.file::after {
+  content: "✓";
+  color: var(--bg-gradient-dark);
+  font-weight: bold;
+  margin-left: 8px;
+}
+
+.dropdown-text-input {
+  width: 100%;
+}
+
+.dropdown-text-input input {
+  width: 100%;
+  height: 45px;
+  background: var(--orange);
+  border-radius: 4px;
+  border: 1px solid white;
+  color: white;
+  font-weight: bold;
+  padding-left: 10px;
+  box-shadow: 4px 4px 4px #b6b6b6;
+  box-sizing: border-box;
+}
+
+.dropdown-text-input input::placeholder {
+  color: #f4d09b;
+}
+
 
 /*******************
   Typography
 ********************/
 h1 {
-  font-size: 32px;
+  font-size: 42px;
   font-weight: 800;
 }
 
@@ -262,18 +509,6 @@ sub {
 .tooltip-title {
   font-weight: 800;
   color: #33e844;
-}
-
-
-/*******************
-  File Input
-********************/
-.file-input-invalid {
-  box-shadow: 1px 1px 1px 1px red;
-}
-
-.file-input-valid {
-  box-shadow: 1px 1px 1px 1px green;
 }
 
 

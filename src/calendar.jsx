@@ -2,9 +2,12 @@ import React from 'react';
 import MonthView from './month';
 import Loader from './loading';
 import OfflineScreen from './offline';
-import { DATE_INPUT } from './app'
+import { HOME } from './app'
 
-export const monthNames = ["", "January", "February", "March", "April", "May", "June",
+export const monthNamesAtIndex = ["", "January", "February", "March", "April", "May", "June",
+"July", "August", "September", "October", "November", "December"
+];
+export const monthNamesOnly = ["January", "February", "March", "April", "May", "June",
 "July", "August", "September", "October", "November", "December"
 ];
 
@@ -71,16 +74,9 @@ class CalendarScreen extends React.Component{
   // Set up initial objects for each month in range
   render() {
     const backButton = (<button
-      onClick={() => this.props.setState({screen: DATE_INPUT})}
-      style={{
-        background: "cornflowerblue", 
-        border: "none",
-        padding: "15px",
-        maxWidth: "180px",
-        borderRadius: "10px",
-        fontWeight: "bold",
-        fontSize: "16px"
-      }}>&#171; Go back</button>);
+      className="bold-btn"
+      style={{width: "fit-content"}}
+      onClick={() => this.props.setState({screen: HOME})}>&#171; Go back</button>);
 
     return this.state.loading ? <Loader /> :
       this.state.offline ? <OfflineScreen /> : (

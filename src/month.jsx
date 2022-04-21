@@ -3,7 +3,7 @@ import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/themes/material.css';
 import 'tippy.js/animations/scale-subtle.css';
-import { monthNames } from './calendar';
+import { monthNamesAtIndex } from './calendar';
 
 /**
  * View for an entire calendar month with cells for each date.
@@ -53,7 +53,7 @@ let MonthView = (props) => {
  * @param props: should have {year, month} as strings.
  */
 let MonthHeader = (props) => {
-  return <h2>{monthNames[+props.month]} {props.year}</h2>;
+  return <h2>{monthNamesAtIndex[+props.month]} {props.year}</h2>;
 }
 
 /**

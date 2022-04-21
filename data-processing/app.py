@@ -57,6 +57,7 @@ def get_tracks():
   result = json.loads(result)
   keys = result.keys()
   track_URIs = [result[k]["track_uri"] for k in keys]
+  print(track_URIs)
   r = requests.get(
     f"https://api.spotify.com/v1/tracks?ids={','.join(track_URIs)}",
     headers={'Authorization': 'Bearer ' + TOKEN})
@@ -91,6 +92,7 @@ def get_artists():
   result = json.loads(result)
   keys = list(result.keys())
   track_URIs = [result[k]["track_uri"] for k in keys]
+  print(track_URIs)
   r = requests.get(
     f"https://api.spotify.com/v1/tracks?ids={','.join(track_URIs)}",
     headers={'Authorization': 'Bearer ' + TOKEN})
