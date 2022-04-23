@@ -24035,7 +24035,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
 
   // src/home.jsx
   var BACKEND_URL2 = "http://localhost:5000";
-  var DateInputScreen = (props) => {
+  var HomeScreen = (props) => {
     const { setState } = props;
     let [hasFiles, setHasFiles] = (0, import_react10.useState)(false);
     let [userStartDate, setUserStartDate] = (0, import_react10.useState)("");
@@ -24082,7 +24082,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       fetch(`${BACKEND_URL2}/start-date`).then((data) => data.json()).then(resolve);
     });
   }
-  var home_default = DateInputScreen;
+  var home_default = HomeScreen;
 
   // src/app.jsx
   var CALENDAR = "calendar";

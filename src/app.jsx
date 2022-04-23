@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Header from './header';
 import CalendarScreen from "./calendar";
-import DateInputScreen from './home';
+import HomeScreen from './home';
 
 export const CALENDAR = "calendar";
 export const HOME = "home";
@@ -29,7 +29,7 @@ export default function App() {
             endYear={endYear}
             endMonth={endMonth}
             setState={setState} /> :
-        (screen === HOME) && <DateInputScreen setState={setState} />
+        (screen === HOME) && <HomeScreen setState={setState} />
       }
     </div>
   );

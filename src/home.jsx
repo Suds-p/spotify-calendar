@@ -12,7 +12,7 @@ const BACKEND_URL = 'http://localhost:5000';
  * 
  * @param props: should have { setState } which changes the current screen.
  */
-let DateInputScreen = (props) => {
+let HomeScreen = (props) => {
   const { setState } = props;
   let [ hasFiles, setHasFiles ] = useState(false);
   let [ userStartDate, setUserStartDate ] = useState("");
@@ -85,4 +85,4 @@ async function getUserStartDate() {
   })
 }
 
-export default DateInputScreen;
+export default HomeScreen;
