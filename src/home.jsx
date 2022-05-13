@@ -23,9 +23,11 @@ let HomeScreen = (props) => {
     checkFilesPresent().then(data => {
       if (mounted) setHasFiles(data.filesPresent);
     })
+    .catch(() => {});
     getUserStartDate().then(data => {
       if (mounted) setUserStartDate(data.startDate);
     })
+    .catch(() => {});
     return () => mounted = false;
   })
 
@@ -70,18 +72,20 @@ let HomeScreen = (props) => {
 }
 
 async function checkFilesPresent() {
-  return new Promise((resolve, _) => {
+  return new Promise((resolve, reject) => {
     fetch("http://localhost:5000/files-present")
     .then(data => data.json())
     .then(resolve)
+    .catch(reject);
   })
 }
 
 async function getUserStartDate() {
-  return new Promise((resolve, _) => {
+  return new Promise((resolve, reject) => {
     fetch(`${BACKEND_URL}/start-date`)
     .then(data => data.json())
     .then(resolve)
+    .catch(reject);
   })
 }
 

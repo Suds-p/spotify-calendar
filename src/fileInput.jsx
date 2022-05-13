@@ -41,7 +41,10 @@ export default function FileInput(props) {
         setButtonTitle("Done! Let's check your history >");
         setUploadState(FILES_UPLOADED);
       })
-      .catch(error => console.log(error));
+      .catch(() => {
+        setButtonTitle("Server is probably offline :(");
+        setUploadState(FILES_DROPPED);
+      });
     }
   }
 
@@ -154,17 +157,11 @@ function UploadView(props) {
 
 // Uploads files to custom server via POST requests
 async function uploadFiles(files) {
-  let shouldStopLoop = false;
   for (let f of files) {
-    try {
-      await fetchRetry(`${BACKEND_URL}/data-file?filename=${f.name}`, {
-        method: 'POST',
-        body: await getBase64(f)
-      }, 5)
-      if (shouldStopLoop) break;
-    } catch (error) {
-      shouldStopLoop = true;
-    }
+    await fetchRetry(`${BACKEND_URL}/data-file?filename=${f.name}`, {
+      method: 'POST',
+      body: await getBase64(f)
+    }, 5)
   }
 }
 

@@ -23783,7 +23783,10 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
         uploadFiles(files).then(() => {
           setButtonTitle("Done! Let's check your history >");
           setUploadState(FILES_UPLOADED);
-        }).catch((error) => console.log(error));
+        }).catch(() => {
+          setButtonTitle("Server is probably offline :(");
+          setUploadState(FILES_DROPPED);
+        });
       }
     }
     let onDrop = (event) => {
@@ -23871,18 +23874,11 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     }, n)));
   }
   async function uploadFiles(files) {
-    let shouldStopLoop = false;
     for (let f of files) {
-      try {
-        await fetchRetry(`${BACKEND_URL}/data-file?filename=${f.name}`, {
-          method: "POST",
-          body: await getBase64(f)
-        }, 5);
-        if (shouldStopLoop)
-          break;
-      } catch (error) {
-        shouldStopLoop = true;
-      }
+      await fetchRetry(`${BACKEND_URL}/data-file?filename=${f.name}`, {
+        method: "POST",
+        body: await getBase64(f)
+      }, 5);
     }
   }
   async function getBase64(file) {
@@ -24044,10 +24040,12 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       checkFilesPresent().then((data) => {
         if (mounted)
           setHasFiles(data.filesPresent);
+      }).catch(() => {
       });
       getUserStartDate().then((data) => {
         if (mounted)
           setUserStartDate(data.startDate);
+      }).catch(() => {
       });
       return () => mounted = false;
     });
@@ -24073,13 +24071,13 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     })));
   };
   async function checkFilesPresent() {
-    return new Promise((resolve, _) => {
-      fetch("http://localhost:5000/files-present").then((data) => data.json()).then(resolve);
+    return new Promise((resolve, reject) => {
+      fetch("http://localhost:5000/files-present").then((data) => data.json()).then(resolve).catch(reject);
     });
   }
   async function getUserStartDate() {
-    return new Promise((resolve, _) => {
-      fetch(`${BACKEND_URL2}/start-date`).then((data) => data.json()).then(resolve);
+    return new Promise((resolve, reject) => {
+      fetch(`${BACKEND_URL2}/start-date`).then((data) => data.json()).then(resolve).catch(reject);
     });
   }
   var home_default = HomeScreen;
