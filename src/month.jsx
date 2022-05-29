@@ -77,15 +77,18 @@ let MonthCell = (props) => {
   const cellClass = isSpacer ? "spacer" : "date";
 
   const imgSrc  = isSpacer ? "" :
-    (viewData && viewData.album_url) ? viewData.album_url :
+    (viewData && viewData.image_url) ? viewData.image_url :
     "../public/assets/no-song.png"
   
 
-  let tooltipContent = 'No song found!';
+  let tooltipContent = 'No data found!';
   if (viewData) {
     const {song, artist, count} = viewData;
     tooltipContent = (<div>
-      <p><span className="tooltip-title">Song</span>: {song}</p>
+      {
+        song &&
+        <p><span className="tooltip-title">Song</span>: {song}</p>
+      }
       <p><span className="tooltip-title">Artist</span>: {artist}</p>
       <p><span className="tooltip-title">Count</span>: {count}</p>
     </div>);

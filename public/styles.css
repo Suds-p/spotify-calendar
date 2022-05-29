@@ -1,3 +1,4 @@
+@charset "UTF-8";
 * {
   margin: 0;
   padding: 0;
@@ -377,6 +378,86 @@ nav a:hover {
   color: #f4d09b;
 }
 
+:root {
+  /* --select-bg-color: #11d058; */
+  --select-bg-color: #F6A833;
+}
+
+.toggle-btn {
+  position: relative;
+  height: 56px;
+}
+
+.toggle-btn input {
+  position: relative;
+  width: 200px;
+  height: 50px;
+  border-radius: 25px;
+  background: #fff;
+  outline: none;
+  appearance: none;
+  font-weight: bold;
+  font-family: sans-serif;
+  box-shadow: 1px 6px 11px #000;
+}
+
+.toggle-btn input:before,
+.toggle-btn input:after {
+  z-index: 2;
+  position: absolute;
+  width: 50%;
+  text-align: center;
+  
+  /* Both 'top' and 'translateY' needed to center */
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.toggle-btn input:after {
+  right: 10px;
+}
+
+.toggle-btn label {
+  z-index: 1;
+  position: absolute;
+  top: 7px;
+  bottom: 13px;
+  border-radius: 20px;
+}
+
+/*** CHECKED state ***/
+.toggle-btn input:checked {
+  transition: background 0.5s -0.1s;
+}
+
+.toggle-btn input:checked:before {
+  color: white;
+  transition: color 0.4s 0.1s;
+}
+
+.toggle-btn input:checked + label {
+  left: 10px;
+  right: 50%;
+  background: var(--select-bg-color);
+  transition: left 0.5s, right 0.4s 0.15s, background 0.35s;
+}
+
+/*** UNCHECKED state ***/
+.toggle-btn input:not(:checked) {
+  transition: background 0.5s -0.1s;
+}
+
+.toggle-btn input:not(:checked):after {
+  color: white;
+  transition: color 0.4s 0.1s;
+}
+
+.toggle-btn input:not(:checked) + label {
+  left: 100px;
+  right: 10px;
+  background: var(--select-bg-color);
+  transition: left 0.4s 0.15s, right 0.5s, background 0.35s -0.1s;
+}
 
 /*******************
   Typography

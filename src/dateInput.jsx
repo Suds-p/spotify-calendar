@@ -22,7 +22,6 @@ export default function DateInput(props) {
 
   function handleStartMonthChange(event) {
     let monthValue = event.target.value;
-    console.log('trig');
     let monthIndex = monthNamesOnly.indexOf(monthValue);
     if (monthIndex !== -1) {
       let tempDate = new Date(startDate);
@@ -33,7 +32,6 @@ export default function DateInput(props) {
 
   function handleStartYearChange(event) {
     let yearValue = event.target.value;
-    console.log('gered');
     if (2008 <= yearValue && yearValue <= new Date().getFullYear()) {
       let tempDate = new Date(startDate);
       tempDate.setFullYear(yearValue);
@@ -43,7 +41,6 @@ export default function DateInput(props) {
 
   function handleEndMonthChange(event) {
     let monthValue = event.target.value;
-    console.log('dont');
     let monthIndex = monthNamesOnly.indexOf(monthValue);
     if (monthIndex !== -1) {
       let tempDate = new Date(endDate);
@@ -54,7 +51,6 @@ export default function DateInput(props) {
 
   function handleEndYearChange(event) {
     let yearValue = event.target.value;
-    console.log('hug me im scared');
     if (2008 <= yearValue && yearValue <= new Date().getFullYear()) {
       let tempDate = new Date(endDate);
       tempDate.setFullYear(yearValue);

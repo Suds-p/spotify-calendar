@@ -51,7 +51,7 @@ def get_tracks():
   end = "" if end == "2001-01-01" else end
   result = find_daily_songs(start, end)
   if not result:
-    return Response("No data available to process", 401)
+    return Response("Could not generate song table", 401)
 
   # Add album image URLs from Spotify API
   result = json.loads(result)
@@ -67,7 +67,7 @@ def get_tracks():
   songData = r.json()['tracks']
   album_URLs = [d['album']['images'][1]['url'] for d in songData]
   for i, k in enumerate(keys):
-    result[k]['album_url'] = album_URLs[i]
+    result[k]['image_url'] = album_URLs[i]
 
   return result
 
@@ -86,7 +86,7 @@ def get_artists():
   end = "" if end == "2001-01-01" else end
   result = find_daily_artists(start, end)
   if not result:
-    return Response("No data available to process", 401)
+    return Response("Could not generate artist table", 401)
 
   # Add artist image URLs from Spotify API
   result = json.loads(result)
@@ -112,7 +112,7 @@ def get_artists():
   artist_URLs = [d['images'][1]['url'] for d in artistData]
 
   for i, k in enumerate(keys):
-    result[k]['artist_url'] = artist_URLs[i]
+    result[k]['image_url'] = artist_URLs[i]
 
   return result
 
@@ -123,7 +123,7 @@ def are_files_present():
 @app.route("/start-date")
 def start_date():
   res = get_start_date()
-  return {"startDate": res} if res else Response("No data available to process", 401)
+  return {"startDate": res} if res else Response("Could not get start date", 401)
 
 @app.route("/data-file", methods=['POST'])
 def upload_file():

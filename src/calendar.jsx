@@ -3,6 +3,7 @@ import MonthView from './month';
 import Loader from './loading';
 import OfflineScreen from './offline';
 import { HOME } from './app'
+import Toggle from './toggle';
 
 export const monthNamesAtIndex = ["", "January", "February", "March", "April", "May", "June",
 "July", "August", "September", "October", "November", "December"
@@ -42,16 +43,33 @@ class CalendarScreen extends React.Component{
     super(props);
     let { startYear, startMonth, endYear, endMonth } = this.props;
     this.mRange = getMonthRange(startYear, startMonth, endYear, endMonth);
-    this.state = {loading: false, offline: true, viewData: {}};
+    this.state = {
+      loading: false,
+      offline: true,
+      viewData: {},
+      songData: {},
+      artistData: {}
+    };
+
+    this.onChangeValue = this.onChangeValue.bind(this);
   }
 
-  componentDidMount() {
+  onChangeValue(value) {
+    switch (value) {
+      case SONGS:
+        this.setState({viewData: this.state.songData}); break;
+      case ARTISTS:
+        this.setState({viewData: this.state.artistData}); break;
+    }
+  }
+
+  async componentDidMount() {
     let tempState = {};
     this.mRange.map(x => tempState[x[0]+"-"+x[1]] = {} );
     let keys = Object.keys(tempState);
     this.setState({ loading: true });
     
-    Promise.all(
+    await Promise.all(
       this.mRange.map(info => {
         let [date1, date2] = [`${info[0]}-${info[1]}-01`, `${info[0]}-${info[1]}-31`];
         return new Promise((res, rej) => {
@@ -64,13 +82,34 @@ class CalendarScreen extends React.Component{
     )
     .then(results => {
       keys.map((k, i) => tempState[k] = results[i]);
-      this.setState({loading: false, offline: false, viewData: tempState});
+      this.setState({loading: false, offline: false, viewData: tempState, songData: tempState});
+    })
+    .catch(_ => {
+      this.setState({loading: false, offline: true});
+    });
+
+    tempState = {};
+
+    await Promise.all(
+      this.mRange.map(info => {
+        let [date1, date2] = [`${info[0]}-${info[1]}-01`, `${info[0]}-${info[1]}-31`];
+        return new Promise((res, rej) => {
+          fetch(`http://localhost:5000/artists?start=${date1}&end=${date2}`)
+          .then(resp => resp.json())
+          .then(data => res(data))
+          .catch(err => rej(`Server is likely offline: ${err}`))
+        });
+      })
+    )
+    .then(results => {
+      keys.map((k, i) => tempState[k] = results[i]);
+      this.setState({loading: false, offline: false, artistData: tempState});
     })
     .catch(_ => {
       this.setState({loading: false, offline: true});
     });
   }
-  
+
   // Set up initial objects for each month in range
   render() {
     const backButton = (<button
@@ -78,10 +117,14 @@ class CalendarScreen extends React.Component{
       style={{width: "fit-content"}}
       onClick={() => this.props.setState({screen: HOME})}>&#171; Go back</button>);
 
-    return this.state.loading ? <Loader /> :
-      this.state.offline ? <OfflineScreen /> : (
+    return this.state.loading ? <Loader /> : (
       <main style={{display: "flex", flexDirection: "column", padding: "10px"}}>
-        {backButton}
+        <div style={{display: "flex", marginTop: 15}}>
+          {backButton}
+          <div style={{flexGrow: 1, display: "flex", justifyContent: "center"}}>
+            <Toggle option1={SONGS} option2={ARTISTS} onChangeValue={this.onChangeValue} />
+          </div>
+        </div>
         <div id="calendarScreen">
           {this.mRange.map(info => 
             <MonthView 

@@ -2437,11 +2437,11 @@
       if (true) {
         (function() {
           "use strict";
-          var React12 = require_react();
+          var React13 = require_react();
           var _assign = require_object_assign();
           var Scheduler = require_scheduler();
           var tracing = require_tracing();
-          var ReactSharedInternals = React12.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+          var ReactSharedInternals = React13.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
           function warn(format2) {
             {
               for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -2473,7 +2473,7 @@
               Function.prototype.apply.call(console[level], console, argsWithFormat);
             }
           }
-          if (!React12) {
+          if (!React13) {
             {
               throw Error("ReactDOM was loaded before React. Make sure you load the React package before loading ReactDOM.");
             }
@@ -3689,7 +3689,7 @@
           var didWarnInvalidChild = false;
           function flattenChildren(children) {
             var content = "";
-            React12.Children.forEach(children, function(child) {
+            React13.Children.forEach(children, function(child) {
               if (child == null) {
                 return;
               }
@@ -3700,7 +3700,7 @@
           function validateProps2(element, props) {
             {
               if (typeof props.children === "object" && props.children !== null) {
-                React12.Children.forEach(props.children, function(child) {
+                React13.Children.forEach(props.children, function(child) {
                   if (child == null) {
                     return;
                   }
@@ -10893,7 +10893,7 @@
           }
           var fakeInternalInstance = {};
           var isArray = Array.isArray;
-          var emptyRefsObject = new React12.Component().refs;
+          var emptyRefsObject = new React13.Component().refs;
           var didWarnAboutStateAssignmentForComponent;
           var didWarnAboutUninitializedState;
           var didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate;
@@ -20417,11 +20417,11 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   });
 
   // src/index.jsx
-  var import_react12 = __toESM(require_react(), 1);
+  var import_react13 = __toESM(require_react(), 1);
   var import_react_dom2 = __toESM(require_react_dom(), 1);
 
   // src/app.jsx
-  var import_react11 = __toESM(require_react(), 1);
+  var import_react12 = __toESM(require_react(), 1);
 
   // src/header.jsx
   var import_react = __toESM(require_react(), 1);
@@ -20436,7 +20436,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   }, /* @__PURE__ */ import_react.default.createElement("h4", null, "Contact"))));
 
   // src/calendar.jsx
-  var import_react7 = __toESM(require_react(), 1);
+  var import_react8 = __toESM(require_react(), 1);
 
   // src/month.jsx
   var import_react3 = __toESM(require_react(), 1);
@@ -23601,11 +23601,11 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   var MonthCell = (props) => {
     const { dateString, isSpacer, viewData } = props;
     const cellClass = isSpacer ? "spacer" : "date";
-    const imgSrc = isSpacer ? "" : viewData && viewData.album_url ? viewData.album_url : "../public/assets/no-song.png";
-    let tooltipContent = "No song found!";
+    const imgSrc = isSpacer ? "" : viewData && viewData.image_url ? viewData.image_url : "../public/assets/no-song.png";
+    let tooltipContent = "No data found!";
     if (viewData) {
       const { song, artist, count } = viewData;
-      tooltipContent = /* @__PURE__ */ import_react3.default.createElement("div", null, /* @__PURE__ */ import_react3.default.createElement("p", null, /* @__PURE__ */ import_react3.default.createElement("span", {
+      tooltipContent = /* @__PURE__ */ import_react3.default.createElement("div", null, song && /* @__PURE__ */ import_react3.default.createElement("p", null, /* @__PURE__ */ import_react3.default.createElement("span", {
         className: "tooltip-title"
       }, "Song"), ": ", song), /* @__PURE__ */ import_react3.default.createElement("p", null, /* @__PURE__ */ import_react3.default.createElement("span", {
         className: "tooltip-title"
@@ -23659,10 +23659,32 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
 
   // src/offline.jsx
   var import_react6 = __toESM(require_react(), 1);
-  function ErrorScreen() {
-    return /* @__PURE__ */ import_react6.default.createElement("div", {
-      className: "screen-container"
-    }, /* @__PURE__ */ import_react6.default.createElement("h1", null, "Server is currently offline."), /* @__PURE__ */ import_react6.default.createElement("p", null, "Check back later when it's on!"));
+
+  // src/toggle.jsx
+  var import_react7 = __toESM(require_react(), 1);
+  function Toggle(props) {
+    let { option1, option2, onChangeValue } = props;
+    function processChange(event) {
+      onChangeValue(event.target.checked ? option1 : option2);
+    }
+    let toggleCSS = `
+    .toggle-btn input:before {
+      content: "${option1}";
+    }
+    
+    .toggle-btn input:after {
+      content: "${option2}";
+    }
+  `;
+    return /* @__PURE__ */ import_react7.default.createElement(import_react7.default.Fragment, null, /* @__PURE__ */ import_react7.default.createElement("style", null, toggleCSS), /* @__PURE__ */ import_react7.default.createElement("span", {
+      className: "toggle-btn"
+    }, /* @__PURE__ */ import_react7.default.createElement("input", {
+      type: "checkbox",
+      id: "switch",
+      onChange: processChange
+    }), /* @__PURE__ */ import_react7.default.createElement("label", {
+      htmlFor: "switch"
+    })));
   }
 
   // src/calendar.jsx
@@ -23695,41 +23717,78 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     "November",
     "December"
   ];
-  var CalendarScreen = class extends import_react7.default.Component {
+  var CalendarScreen = class extends import_react8.default.Component {
     constructor(props) {
       super(props);
       let { startYear, startMonth, endYear, endMonth } = this.props;
       this.mRange = getMonthRange(startYear, startMonth, endYear, endMonth);
-      this.state = { loading: false, offline: true, viewData: {} };
+      this.state = {
+        loading: false,
+        offline: true,
+        viewData: {},
+        songData: {},
+        artistData: {}
+      };
+      this.onChangeValue = this.onChangeValue.bind(this);
     }
-    componentDidMount() {
+    onChangeValue(value) {
+      switch (value) {
+        case SONGS:
+          this.setState({ viewData: this.state.songData });
+          break;
+        case ARTISTS:
+          this.setState({ viewData: this.state.artistData });
+          break;
+      }
+    }
+    async componentDidMount() {
       let tempState = {};
       this.mRange.map((x) => tempState[x[0] + "-" + x[1]] = {});
       let keys = Object.keys(tempState);
       this.setState({ loading: true });
-      Promise.all(this.mRange.map((info) => {
+      await Promise.all(this.mRange.map((info) => {
         let [date1, date2] = [`${info[0]}-${info[1]}-01`, `${info[0]}-${info[1]}-31`];
         return new Promise((res, rej) => {
           fetch(`http://localhost:5000/tracks?start=${date1}&end=${date2}`).then((resp) => resp.json()).then((data) => res(data)).catch((err) => rej(`Server is likely offline: ${err}`));
         });
       })).then((results) => {
         keys.map((k, i) => tempState[k] = results[i]);
-        this.setState({ loading: false, offline: false, viewData: tempState });
+        this.setState({ loading: false, offline: false, viewData: tempState, songData: tempState });
+      }).catch((_) => {
+        this.setState({ loading: false, offline: true });
+      });
+      tempState = {};
+      await Promise.all(this.mRange.map((info) => {
+        let [date1, date2] = [`${info[0]}-${info[1]}-01`, `${info[0]}-${info[1]}-31`];
+        return new Promise((res, rej) => {
+          fetch(`http://localhost:5000/artists?start=${date1}&end=${date2}`).then((resp) => resp.json()).then((data) => res(data)).catch((err) => rej(`Server is likely offline: ${err}`));
+        });
+      })).then((results) => {
+        keys.map((k, i) => tempState[k] = results[i]);
+        this.setState({ loading: false, offline: false, artistData: tempState });
       }).catch((_) => {
         this.setState({ loading: false, offline: true });
       });
     }
     render() {
-      const backButton = /* @__PURE__ */ import_react7.default.createElement("button", {
+      const backButton = /* @__PURE__ */ import_react8.default.createElement("button", {
         className: "bold-btn",
         style: { width: "fit-content" },
         onClick: () => this.props.setState({ screen: HOME })
       }, "\xAB Go back");
-      return this.state.loading ? /* @__PURE__ */ import_react7.default.createElement(loading_default, null) : this.state.offline ? /* @__PURE__ */ import_react7.default.createElement(ErrorScreen, null) : /* @__PURE__ */ import_react7.default.createElement("main", {
+      return this.state.loading ? /* @__PURE__ */ import_react8.default.createElement(loading_default, null) : /* @__PURE__ */ import_react8.default.createElement("main", {
         style: { display: "flex", flexDirection: "column", padding: "10px" }
-      }, backButton, /* @__PURE__ */ import_react7.default.createElement("div", {
+      }, /* @__PURE__ */ import_react8.default.createElement("div", {
+        style: { display: "flex", marginTop: 15 }
+      }, backButton, /* @__PURE__ */ import_react8.default.createElement("div", {
+        style: { flexGrow: 1, display: "flex", justifyContent: "center" }
+      }, /* @__PURE__ */ import_react8.default.createElement(Toggle, {
+        option1: SONGS,
+        option2: ARTISTS,
+        onChangeValue: this.onChangeValue
+      }))), /* @__PURE__ */ import_react8.default.createElement("div", {
         id: "calendarScreen"
-      }, this.mRange.map((info) => /* @__PURE__ */ import_react7.default.createElement(month_default, {
+      }, this.mRange.map((info) => /* @__PURE__ */ import_react8.default.createElement(month_default, {
         year: info[0],
         month: info[1],
         key: info[0] + "-" + info[1],
@@ -23749,20 +23808,20 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   var calendar_default = CalendarScreen;
 
   // src/home.jsx
-  var import_react10 = __toESM(require_react(), 1);
+  var import_react11 = __toESM(require_react(), 1);
 
   // src/fileInput.jsx
-  var import_react8 = __toESM(require_react(), 1);
+  var import_react9 = __toESM(require_react(), 1);
   var BACKEND_URL = "http://localhost:5000";
   function FileInput(props) {
     const [EMPTY, INVALID, VALID, FILES_DROPPED, FILES_UPLOADING, FILES_UPLOADED] = ["upload-empty", "upload-invalid", "upload-valid", "files-unloaded", "files-uploading", "files-uploaded"];
     const nameReg = /(endsong)_(\d|0[1-9]|[1-9]\d).json/gm;
     let { updateHasFiles } = props;
-    let [uploadState, setUploadState] = (0, import_react8.useState)(EMPTY);
-    let [errorMessage, setErrorMessage] = (0, import_react8.useState)("");
-    let [isInputDisabled, setInputDisabled] = (0, import_react8.useState)(false);
-    let [files, setFiles] = (0, import_react8.useState)([]);
-    let [buttonTitle, setButtonTitle] = (0, import_react8.useState)("Submit Files");
+    let [uploadState, setUploadState] = (0, import_react9.useState)(EMPTY);
+    let [errorMessage, setErrorMessage] = (0, import_react9.useState)("");
+    let [isInputDisabled, setInputDisabled] = (0, import_react9.useState)(false);
+    let [files, setFiles] = (0, import_react9.useState)([]);
+    let [buttonTitle, setButtonTitle] = (0, import_react9.useState)("Submit Files");
     function validateSelection(files2) {
       let names = files2.map((f) => f.name);
       if (files2.length === 0) {
@@ -23814,43 +23873,43 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       event.preventDefault();
       setUploadState(EMPTY);
     };
-    let fileEmpty = /* @__PURE__ */ import_react8.default.createElement("div", {
+    let fileEmpty = /* @__PURE__ */ import_react9.default.createElement("div", {
       className: "content " + EMPTY
-    }, /* @__PURE__ */ import_react8.default.createElement("div", {
+    }, /* @__PURE__ */ import_react9.default.createElement("div", {
       className: "file-icons"
-    }, /* @__PURE__ */ import_react8.default.createElement("img", {
+    }, /* @__PURE__ */ import_react9.default.createElement("img", {
       src: "../images/doc-symbol.png"
-    }), /* @__PURE__ */ import_react8.default.createElement("img", {
+    }), /* @__PURE__ */ import_react9.default.createElement("img", {
       src: "../images/doc-symbol.png"
-    }), /* @__PURE__ */ import_react8.default.createElement("img", {
+    }), /* @__PURE__ */ import_react9.default.createElement("img", {
       src: "../images/doc-symbol.png"
-    })), /* @__PURE__ */ import_react8.default.createElement("div", {
+    })), /* @__PURE__ */ import_react9.default.createElement("div", {
       className: "upload-text"
-    }, /* @__PURE__ */ import_react8.default.createElement("h2", null, "Drag and drop data files here"), /* @__PURE__ */ import_react8.default.createElement("a", {
+    }, /* @__PURE__ */ import_react9.default.createElement("h2", null, "Drag and drop data files here"), /* @__PURE__ */ import_react9.default.createElement("a", {
       href: "#"
-    }, /* @__PURE__ */ import_react8.default.createElement("sub", null, "Not sure where to find your files?"))));
-    let fileDragValid = /* @__PURE__ */ import_react8.default.createElement("div", {
+    }, /* @__PURE__ */ import_react9.default.createElement("sub", null, "Not sure where to find your files?"))));
+    let fileDragValid = /* @__PURE__ */ import_react9.default.createElement("div", {
       className: "content " + VALID
-    }, /* @__PURE__ */ import_react8.default.createElement("div", {
+    }, /* @__PURE__ */ import_react9.default.createElement("div", {
       className: "upload-text"
-    }, /* @__PURE__ */ import_react8.default.createElement("h2", null, "Drop data files in")));
-    let fileDragInvalid = /* @__PURE__ */ import_react8.default.createElement("div", {
+    }, /* @__PURE__ */ import_react9.default.createElement("h2", null, "Drop data files in")));
+    let fileDragInvalid = /* @__PURE__ */ import_react9.default.createElement("div", {
       className: "content " + INVALID
-    }, /* @__PURE__ */ import_react8.default.createElement("div", {
+    }, /* @__PURE__ */ import_react9.default.createElement("div", {
       className: "upload-text"
-    }, /* @__PURE__ */ import_react8.default.createElement("h2", null, errorMessage)));
-    let filesReceived = /* @__PURE__ */ import_react8.default.createElement(UploadView, {
+    }, /* @__PURE__ */ import_react9.default.createElement("h2", null, errorMessage)));
+    let filesReceived = /* @__PURE__ */ import_react9.default.createElement(UploadView, {
       files,
       currentState: uploadState
     });
-    return /* @__PURE__ */ import_react8.default.createElement("div", {
+    return /* @__PURE__ */ import_react9.default.createElement("div", {
       className: "file-upload-wrapper",
       onDrop,
       onDragOver,
       onDragLeave
-    }, /* @__PURE__ */ import_react8.default.createElement("div", {
+    }, /* @__PURE__ */ import_react9.default.createElement("div", {
       className: "file-upload interactable"
-    }, /* @__PURE__ */ import_react8.default.createElement("input", {
+    }, /* @__PURE__ */ import_react9.default.createElement("input", {
       multiple: true,
       type: "file",
       name: "songFiles",
@@ -23858,7 +23917,7 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       disabled: isInputDisabled,
       onChange: validateSelection,
       className: uploadState === EMPTY ? "" : "file-input-" + uploadState
-    }), uploadState == EMPTY ? fileEmpty : uploadState == VALID ? fileDragValid : uploadState == INVALID ? fileDragInvalid : filesReceived), /* @__PURE__ */ import_react8.default.createElement("button", {
+    }), uploadState == EMPTY ? fileEmpty : uploadState == VALID ? fileDragValid : uploadState == INVALID ? fileDragInvalid : filesReceived), /* @__PURE__ */ import_react9.default.createElement("button", {
       className: "bold-btn",
       onClick: uploadState === FILES_UPLOADED ? updateHasFiles : submitFiles
     }, buttonTitle));
@@ -23866,9 +23925,9 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   function UploadView(props) {
     let { files, currentState } = props;
     let names = files.map((f) => f.name);
-    return /* @__PURE__ */ import_react8.default.createElement("div", {
+    return /* @__PURE__ */ import_react9.default.createElement("div", {
       className: "received-file-list"
-    }, names.map((n, i) => /* @__PURE__ */ import_react8.default.createElement("span", {
+    }, names.map((n, i) => /* @__PURE__ */ import_react9.default.createElement("span", {
       className: "file " + currentState,
       key: "file-" + i
     }, n)));
@@ -23901,11 +23960,11 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   }
 
   // src/dateInput.jsx
-  var import_react9 = __toESM(require_react(), 1);
+  var import_react10 = __toESM(require_react(), 1);
   function DateInput(props) {
     let { updateHasDate } = props;
-    let [startDate, setStart] = (0, import_react9.useState)(new Date());
-    let [endDate, setEnd] = (0, import_react9.useState)(new Date());
+    let [startDate, setStart] = (0, import_react10.useState)(new Date());
+    let [endDate, setEnd] = (0, import_react10.useState)(new Date());
     function validateDates(start2, end2) {
       return start2 && end2 && start2 <= end2;
     }
@@ -23919,7 +23978,6 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     }
     function handleStartMonthChange(event) {
       let monthValue = event.target.value;
-      console.log("trig");
       let monthIndex = monthNamesOnly.indexOf(monthValue);
       if (monthIndex !== -1) {
         let tempDate = new Date(startDate);
@@ -23929,7 +23987,6 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     }
     function handleStartYearChange(event) {
       let yearValue = event.target.value;
-      console.log("gered");
       if (2008 <= yearValue && yearValue <= new Date().getFullYear()) {
         let tempDate = new Date(startDate);
         tempDate.setFullYear(yearValue);
@@ -23938,7 +23995,6 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     }
     function handleEndMonthChange(event) {
       let monthValue = event.target.value;
-      console.log("dont");
       let monthIndex = monthNamesOnly.indexOf(monthValue);
       if (monthIndex !== -1) {
         let tempDate = new Date(endDate);
@@ -23948,62 +24004,61 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     }
     function handleEndYearChange(event) {
       let yearValue = event.target.value;
-      console.log("hug me im scared");
       if (2008 <= yearValue && yearValue <= new Date().getFullYear()) {
         let tempDate = new Date(endDate);
         tempDate.setFullYear(yearValue);
         setEnd(tempDate);
       }
     }
-    return /* @__PURE__ */ import_react9.default.createElement("div", {
+    return /* @__PURE__ */ import_react10.default.createElement("div", {
       className: "date-input-wrapper"
-    }, /* @__PURE__ */ import_react9.default.createElement("div", {
+    }, /* @__PURE__ */ import_react10.default.createElement("div", {
       className: "date-input interactable"
-    }, /* @__PURE__ */ import_react9.default.createElement("div", {
+    }, /* @__PURE__ */ import_react10.default.createElement("div", {
       className: "row"
-    }, /* @__PURE__ */ import_react9.default.createElement("h3", null, "See history from")), /* @__PURE__ */ import_react9.default.createElement("div", {
+    }, /* @__PURE__ */ import_react10.default.createElement("h3", null, "See history from")), /* @__PURE__ */ import_react10.default.createElement("div", {
       className: "row"
-    }, /* @__PURE__ */ import_react9.default.createElement(MonthListInput, {
+    }, /* @__PURE__ */ import_react10.default.createElement(MonthListInput, {
       name: "start-month",
       id: "sm",
       onChange: handleStartMonthChange
-    }), /* @__PURE__ */ import_react9.default.createElement("span", {
+    }), /* @__PURE__ */ import_react10.default.createElement("span", {
       className: "bar"
-    }, "|"), /* @__PURE__ */ import_react9.default.createElement(YearListInput, {
+    }, "|"), /* @__PURE__ */ import_react10.default.createElement(YearListInput, {
       name: "start-year",
       id: "sy",
       onChange: handleStartYearChange
-    })), /* @__PURE__ */ import_react9.default.createElement("div", {
+    })), /* @__PURE__ */ import_react10.default.createElement("div", {
       className: "row"
-    }, /* @__PURE__ */ import_react9.default.createElement("h3", null, "to")), /* @__PURE__ */ import_react9.default.createElement("div", {
+    }, /* @__PURE__ */ import_react10.default.createElement("h3", null, "to")), /* @__PURE__ */ import_react10.default.createElement("div", {
       className: "row"
-    }, /* @__PURE__ */ import_react9.default.createElement(MonthListInput, {
+    }, /* @__PURE__ */ import_react10.default.createElement(MonthListInput, {
       name: "end-month",
       id: "em",
       onChange: handleEndMonthChange
-    }), /* @__PURE__ */ import_react9.default.createElement("span", {
+    }), /* @__PURE__ */ import_react10.default.createElement("span", {
       className: "bar"
-    }, "|"), /* @__PURE__ */ import_react9.default.createElement(YearListInput, {
+    }, "|"), /* @__PURE__ */ import_react10.default.createElement(YearListInput, {
       name: "end-year",
       id: "ey",
       onChange: handleEndYearChange
-    }))), /* @__PURE__ */ import_react9.default.createElement("button", {
+    }))), /* @__PURE__ */ import_react10.default.createElement("button", {
       className: "bold-btn",
       onClick: updateDates
     }, "Explore your obsessions"));
   }
   function MonthListInput(props) {
     let { name, id, onChange } = props;
-    return /* @__PURE__ */ import_react9.default.createElement("div", {
+    return /* @__PURE__ */ import_react10.default.createElement("div", {
       className: "dropdown-text-input"
-    }, /* @__PURE__ */ import_react9.default.createElement("input", {
+    }, /* @__PURE__ */ import_react10.default.createElement("input", {
       list: id,
       name,
       placeholder: monthNamesOnly[0],
       onChange
-    }), /* @__PURE__ */ import_react9.default.createElement("datalist", {
+    }), /* @__PURE__ */ import_react10.default.createElement("datalist", {
       id
-    }, monthNamesOnly.map((m) => /* @__PURE__ */ import_react9.default.createElement("option", {
+    }, monthNamesOnly.map((m) => /* @__PURE__ */ import_react10.default.createElement("option", {
       value: m,
       key: m
     }))));
@@ -24014,16 +24069,16 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     let years = [];
     for (let y = 2008; y <= currentYear; y++)
       years.push(y);
-    return /* @__PURE__ */ import_react9.default.createElement("div", {
+    return /* @__PURE__ */ import_react10.default.createElement("div", {
       className: "dropdown-text-input"
-    }, /* @__PURE__ */ import_react9.default.createElement("input", {
+    }, /* @__PURE__ */ import_react10.default.createElement("input", {
       list: id,
       name,
       placeholder: currentYear,
       onChange
-    }), /* @__PURE__ */ import_react9.default.createElement("datalist", {
+    }), /* @__PURE__ */ import_react10.default.createElement("datalist", {
       id
-    }, years.map((y) => /* @__PURE__ */ import_react9.default.createElement("option", {
+    }, years.map((y) => /* @__PURE__ */ import_react10.default.createElement("option", {
       value: y,
       key: y
     }))));
@@ -24033,9 +24088,9 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   var BACKEND_URL2 = "http://localhost:5000";
   var HomeScreen = (props) => {
     const { setState } = props;
-    let [hasFiles, setHasFiles] = (0, import_react10.useState)(false);
-    let [userStartDate, setUserStartDate] = (0, import_react10.useState)("");
-    (0, import_react10.useEffect)(() => {
+    let [hasFiles, setHasFiles] = (0, import_react11.useState)(false);
+    let [userStartDate, setUserStartDate] = (0, import_react11.useState)("");
+    (0, import_react11.useEffect)(() => {
       let mounted = true;
       checkFilesPresent().then((data) => {
         if (mounted)
@@ -24058,15 +24113,15 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
         endMonth: endDate.getMonth() + 1
       });
     }
-    return /* @__PURE__ */ import_react10.default.createElement("div", {
+    return /* @__PURE__ */ import_react11.default.createElement("div", {
       className: "home-container"
-    }, /* @__PURE__ */ import_react10.default.createElement("section", {
+    }, /* @__PURE__ */ import_react11.default.createElement("section", {
       className: "col home-text"
-    }, /* @__PURE__ */ import_react10.default.createElement("h1", null, "Explore your", /* @__PURE__ */ import_react10.default.createElement("br", null), "Spotify ", /* @__PURE__ */ import_react10.default.createElement("span", null, "obsessions"), "."), /* @__PURE__ */ import_react10.default.createElement("p", null, "Are you someone that can't get enough of that one song or artist and go through long phases where you listen to nothing else? Curious how your music tastes have changed over the years?", /* @__PURE__ */ import_react10.default.createElement("br", null), /* @__PURE__ */ import_react10.default.createElement("br", null), "Look no further! Upload your Spotify listening history files here and see your playing history come to file. Find out which songs or artists you've listened to the most over the years.")), /* @__PURE__ */ import_react10.default.createElement("section", {
+    }, /* @__PURE__ */ import_react11.default.createElement("h1", null, "Explore your", /* @__PURE__ */ import_react11.default.createElement("br", null), "Spotify ", /* @__PURE__ */ import_react11.default.createElement("span", null, "obsessions"), "."), /* @__PURE__ */ import_react11.default.createElement("p", null, "Are you someone that can't get enough of that one song or artist and go through long phases where you listen to nothing else? Curious how your music tastes have changed over the years?", /* @__PURE__ */ import_react11.default.createElement("br", null), /* @__PURE__ */ import_react11.default.createElement("br", null), "Look no further! Upload your Spotify listening history files here and see your playing history come to file. Find out which songs or artists you've listened to the most over the years.")), /* @__PURE__ */ import_react11.default.createElement("section", {
       className: "col"
-    }, hasFiles ? /* @__PURE__ */ import_react10.default.createElement(DateInput, {
+    }, hasFiles ? /* @__PURE__ */ import_react11.default.createElement(DateInput, {
       updateHasDate: changeScreen
-    }) : /* @__PURE__ */ import_react10.default.createElement(FileInput, {
+    }) : /* @__PURE__ */ import_react11.default.createElement(FileInput, {
       updateHasFiles: () => setHasFiles(true)
     })));
   };
@@ -24093,23 +24148,23 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     endMonth: 0
   };
   function App() {
-    const [state, setState] = (0, import_react11.useState)(INITIAL_STATE);
+    const [state, setState] = (0, import_react12.useState)(INITIAL_STATE);
     let { screen, startYear, startMonth, endYear, endMonth } = state;
-    return /* @__PURE__ */ import_react11.default.createElement("div", {
+    return /* @__PURE__ */ import_react12.default.createElement("div", {
       style: { "overflow": "scroll" }
-    }, /* @__PURE__ */ import_react11.default.createElement(header_default, null), screen === CALENDAR ? /* @__PURE__ */ import_react11.default.createElement(calendar_default, {
+    }, /* @__PURE__ */ import_react12.default.createElement(header_default, null), screen === CALENDAR ? /* @__PURE__ */ import_react12.default.createElement(calendar_default, {
       startYear,
       startMonth,
       endYear,
       endMonth,
       setState
-    }) : screen === HOME && /* @__PURE__ */ import_react11.default.createElement(home_default, {
+    }) : screen === HOME && /* @__PURE__ */ import_react12.default.createElement(home_default, {
       setState
     }));
   }
 
   // src/index.jsx
-  import_react_dom2.default.render(/* @__PURE__ */ import_react12.default.createElement(App, null), document.getElementById("root"));
+  import_react_dom2.default.render(/* @__PURE__ */ import_react13.default.createElement(App, null), document.getElementById("root"));
 })();
 /*
 object-assign
