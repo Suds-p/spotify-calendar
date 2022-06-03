@@ -71,6 +71,7 @@ class CalendarScreen extends React.Component{
     let keys = Object.keys(tempState);
     this.setState({ loading: true });
     
+    /** Load all data for SONGS mode **/
     await Promise.all(
       this.mRange.map(info => {
         let [date1, date2] = [`${info[0]}-${info[1]}-01`, `${info[0]}-${info[1]}-31`];
@@ -93,6 +94,7 @@ class CalendarScreen extends React.Component{
 
     tempState = {};
 
+    /** Load all data for ARTISTS mode **/
     await Promise.all(
       this.mRange.map(info => {
         let [date1, date2] = [`${info[0]}-${info[1]}-01`, `${info[0]}-${info[1]}-31`];
@@ -114,13 +116,13 @@ class CalendarScreen extends React.Component{
     });
   }
 
-  // Set up initial objects for each month in range
   render() {
     const backButton = (<button
       className="bold-btn"
       style={{width: "fit-content"}}
       onClick={() => this.props.setState({screen: HOME})}>&#171; Go back</button>);
 
+    // Set up initial objects for each month in range
     return this.state.loading ? <Loader /> : (
       <main style={{display: "flex", flexDirection: "column", padding: "10px"}}>
         <div style={{display: "flex", marginTop: 15}}>
