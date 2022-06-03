@@ -23,6 +23,7 @@ create_dataframe:
   Returns a dataframe made of all JSON files available.
 """
 def create_dataframe():
+  print("\n! create_dataframe() !\n")
   try:
     data_paths = [("data/" + d) for d in listdir("./data") if ".json" in d]
   except FileNotFoundError:
@@ -31,7 +32,9 @@ def create_dataframe():
   if data_paths == []:
     return
 
+  print("attempting to read json")
   dfs = [pd.read_json(path) for path in data_paths]
+  print("successfully read json")
   all_spotify_df = pd.concat(dfs, ignore_index=True)
   all_spotify_df["Play-Time"] = pd.to_datetime(all_spotify_df["ts"])
   all_spotify_df['play-date'] = all_spotify_df['Play-Time'].apply(extract_date)
@@ -54,6 +57,7 @@ build_daily_song_map:
   over the entire duration of the user's Spotify history.
 """
 def build_daily_song_map(df):
+  print("\n! build_daily_song_map() !\n")
   if df is None:
     return
   g = df.groupby(["play-date", "song"]).agg(
@@ -74,6 +78,7 @@ build_daily_artist_map:
   over the entire duration of the user's Spotify history.
 """
 def build_daily_artist_map(df):
+  print("\n! build_daily_artist_map() !\n")
   if df is None:
     return
   g = df.groupby(["play-date", "artist"]).agg(
@@ -102,6 +107,7 @@ find_daily_songs:
   If end_date is an empty string, it defaults to today's date.
 """
 def find_daily_songs(start_date, end_date):
+  print("\n! find_daily_songs() !\n")
   global main_df
   if main_df['songs'] is None:
     main_df['songs'] = build_daily_song_map(create_dataframe())
@@ -120,6 +126,7 @@ find_daily_artists:
   If end_date is an empty string, it defaults to today's date.
 """
 def find_daily_artists(start_date, end_date):
+  print("\n! find_daily_artists() !\n")
   global main_df
   if main_df['artists'] is None:
     main_df['artists'] = build_daily_artist_map(create_dataframe())
@@ -142,6 +149,7 @@ Returns True if any user data files are present in the "data" folder
 and False otherwise.
 """
 def check_files_present():
+  print("\n! check_files_present() !\n")
   return len(glob("./data/*")) > 0
 
 

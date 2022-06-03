@@ -12,6 +12,8 @@ export const monthNamesOnly = ["January", "February", "March", "April", "May", "
 "July", "August", "September", "October", "November", "December"
 ];
 
+const SONGS = 'Songs';
+const ARTISTS = 'Artists';
 // Example state structure:
 /*
  {
@@ -84,7 +86,8 @@ class CalendarScreen extends React.Component{
       keys.map((k, i) => tempState[k] = results[i]);
       this.setState({loading: false, offline: false, viewData: tempState, songData: tempState});
     })
-    .catch(_ => {
+    .catch(error => {
+      console.log(error);
       this.setState({loading: false, offline: true});
     });
 
@@ -105,7 +108,8 @@ class CalendarScreen extends React.Component{
       keys.map((k, i) => tempState[k] = results[i]);
       this.setState({loading: false, offline: false, artistData: tempState});
     })
-    .catch(_ => {
+    .catch(error => {
+      console.log(error);
       this.setState({loading: false, offline: true});
     });
   }
@@ -127,11 +131,11 @@ class CalendarScreen extends React.Component{
         </div>
         <div id="calendarScreen">
           {this.mRange.map(info => 
-            <MonthView 
-              year={info[0]}
-              month={info[1]}
-              key={info[0]+'-'+info[1]}
-              viewData={this.state.viewData[info[0]+'-'+info[1]]} />)}
+              <MonthView 
+                year={info[0]}
+                month={info[1]}
+                key={info[0]+'-'+info[1]}
+                viewData={this.state.viewData[info[0]+'-'+info[1]]} />)}
         </div>
       </main>
     );

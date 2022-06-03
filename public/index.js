@@ -23717,6 +23717,8 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     "November",
     "December"
   ];
+  var SONGS = "Songs";
+  var ARTISTS = "Artists";
   var CalendarScreen = class extends import_react8.default.Component {
     constructor(props) {
       super(props);
@@ -23754,7 +23756,8 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       })).then((results) => {
         keys.map((k, i) => tempState[k] = results[i]);
         this.setState({ loading: false, offline: false, viewData: tempState, songData: tempState });
-      }).catch((_) => {
+      }).catch((error) => {
+        console.log(error);
         this.setState({ loading: false, offline: true });
       });
       tempState = {};
@@ -23766,7 +23769,8 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       })).then((results) => {
         keys.map((k, i) => tempState[k] = results[i]);
         this.setState({ loading: false, offline: false, artistData: tempState });
-      }).catch((_) => {
+      }).catch((error) => {
+        console.log(error);
         this.setState({ loading: false, offline: true });
       });
     }
