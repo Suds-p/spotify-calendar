@@ -24,10 +24,10 @@ let HomeScreen = (props) => {
       if (mounted) setHasFiles(data.filesPresent);
     })
     .catch(() => {});
-    getUserStartDate().then(data => {
-      if (mounted) setUserStartDate(data.startDate);
-    })
-    .catch(() => {});
+    // getUserStartDate().then(data => {
+    //   if (mounted) setUserStartDate(data.startDate);
+    // })
+    // .catch(() => {});
     return () => mounted = false;
   })
 

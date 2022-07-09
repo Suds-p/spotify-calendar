@@ -13,7 +13,6 @@ TOKEN = '' # User access token to access the Spotify Web API
 DATA_PATH = "data/" # Path where data files are stored
 
 ########### Get user access token #############
-
 # Read in client secrets
 f = open('.secrets', 'r').read()
 C_ID, C_SECRET = [line.split()[1] for line in f.split('\n')]
@@ -58,6 +57,10 @@ def get_tracks():
   keys = result.keys()
   track_URIs = [result[k]["track_uri"] for k in keys]
   print(track_URIs)
+
+  if result == {}:
+    return result
+
   r = requests.get(
     f"https://api.spotify.com/v1/tracks?ids={','.join(track_URIs)}",
     headers={'Authorization': 'Bearer ' + TOKEN})
@@ -135,3 +138,5 @@ def upload_file():
   f.close()
   return "File successfully uploaded!"
 
+
+app.run(debug=True, use_debugger=False, use_reloader=False)

@@ -37,6 +37,8 @@ export default function FileInput(props) {
       setButtonTitle("Loading . . .");
       setUploadState(FILES_UPLOADING);
       uploadFiles(files)
+      // TODO: add extra step that says "Processing" on button
+      // TODO: add extra step that calls backend to create dataframes
       .then(() => {
         setButtonTitle("Done! Let's check your history >");
         setUploadState(FILES_UPLOADED);

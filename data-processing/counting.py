@@ -11,7 +11,9 @@ keep_cols = [
 ]
 # Transforms datetime info into just date info
 extract_date = lambda x: str(x).split()[0]
-# main_df = None
+# Dataframe made from JSON files
+pandas_df = None
+# Dataframes for specific modes
 main_df = {
   "songs": None,
   "artists": None
@@ -24,6 +26,10 @@ create_dataframe:
 """
 def create_dataframe():
   print("\n! create_dataframe() !\n")
+  global pandas_df
+  if pandas_df is not None:
+    return pandas_df
+  
   try:
     data_paths = [("data/" + d) for d in listdir("./data") if ".json" in d]
   except FileNotFoundError:
@@ -47,8 +53,11 @@ def create_dataframe():
   }, inplace=True)
   all_spotify_df.drop(all_spotify_df.columns.difference(keep_cols), 1, inplace=True)
   
+  pandas_df = all_spotify_df
   return all_spotify_df
 
+def INSPECT_pandas_df():
+  return pandas_df if pandas_df is None else pandas_df.to_dict()
 
 """
 build_daily_song_map:

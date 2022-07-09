@@ -24089,7 +24089,6 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   }
 
   // src/home.jsx
-  var BACKEND_URL2 = "http://localhost:5000";
   var HomeScreen = (props) => {
     const { setState } = props;
     let [hasFiles, setHasFiles] = (0, import_react11.useState)(false);
@@ -24099,11 +24098,6 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       checkFilesPresent().then((data) => {
         if (mounted)
           setHasFiles(data.filesPresent);
-      }).catch(() => {
-      });
-      getUserStartDate().then((data) => {
-        if (mounted)
-          setUserStartDate(data.startDate);
       }).catch(() => {
       });
       return () => mounted = false;
@@ -24132,11 +24126,6 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   async function checkFilesPresent() {
     return new Promise((resolve, reject) => {
       fetch("http://localhost:5000/files-present").then((data) => data.json()).then(resolve).catch(reject);
-    });
-  }
-  async function getUserStartDate() {
-    return new Promise((resolve, reject) => {
-      fetch(`${BACKEND_URL2}/start-date`).then((data) => data.json()).then(resolve).catch(reject);
     });
   }
   var home_default = HomeScreen;
