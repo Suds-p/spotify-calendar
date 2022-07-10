@@ -18,15 +18,20 @@ f = open('.secrets', 'r').read()
 C_ID, C_SECRET = [line.split()[1] for line in f.split('\n')]
 
 secrets = bytes('Basic ', 'ascii') + b64encode(bytes(f"{C_ID}:{C_SECRET}", 'ascii'))
-r = requests.post(
-  'https://accounts.spotify.com/api/token',
-  {'grant_type': 'client_credentials'},
-  headers={'Authorization': secrets})
-if r.status_code >= 400:
-  print("Could not communicate with Spotify: " + r.text)
-  exit(0)
 
-TOKEN = r.json()['access_token']
+def refresh_token():
+  r = requests.post(
+    'https://accounts.spotify.com/api/token',
+    {'grant_type': 'client_credentials'},
+    headers={'Authorization': secrets})
+  if r.status_code >= 400:
+    print("Could not communicate with Spotify: " + r.text)
+    exit(0)
+
+  return r.json()['access_token']
+
+
+TOKEN = refresh_token()
 
 ########### Set up API endpoints to backend #############
 
@@ -37,6 +42,7 @@ CORS(app, resources={'/*': {'origins': '*'}})
 
 @app.route("/tracks")
 def get_tracks():
+  global TOKEN
   # Check that parameters are valid
   start = request.args.get("start", default="2001-01-01", type=str)
   end = request.args.get("end", default="2001-01-01", type=str)
@@ -61,11 +67,18 @@ def get_tracks():
   if result == {}:
     return result
 
+  # Attempt to get tracks, or refresh token if necessary
   r = requests.get(
     f"https://api.spotify.com/v1/tracks?ids={','.join(track_URIs)}",
     headers={'Authorization': 'Bearer ' + TOKEN})
   if r.status_code >= 400:
-    return Response("Could not retrieve track info: " + r.text, 402)
+    if "access token" in r.text:
+      TOKEN = refresh_token()
+      r = requests.get(
+        f"https://api.spotify.com/v1/tracks?ids={','.join(track_URIs)}",
+        headers={'Authorization': 'Bearer ' + TOKEN})
+    else:
+      return Response("Could not retrieve track info: " + r.text, 402)
 
   songData = r.json()['tracks']
   album_URLs = [d['album']['images'][1]['url'] for d in songData]
@@ -76,6 +89,7 @@ def get_tracks():
 
 @app.route("/artists")
 def get_artists():
+  global TOKEN
   # Check that parameters are valid
   start = request.args.get("start", default="2001-01-01", type=str)
   end = request.args.get("end", default="2001-01-01", type=str)
@@ -100,7 +114,13 @@ def get_artists():
     f"https://api.spotify.com/v1/tracks?ids={','.join(track_URIs)}",
     headers={'Authorization': 'Bearer ' + TOKEN})
   if r.status_code >= 400:
-    return Response("Could not retrieve track info: " + r.text, 402)
+    if "access token" in r.text:
+      TOKEN = refresh_token()
+      r = requests.get(
+        f"https://api.spotify.com/v1/tracks?ids={','.join(track_URIs)}",
+        headers={'Authorization': 'Bearer ' + TOKEN})
+    else:
+      return Response("Could not retrieve track info: " + r.text, 402)
 
   songData = r.json()['tracks']
   artist_IDs = [d['album']['artists'][0]['id'] for d in songData]
@@ -112,7 +132,7 @@ def get_artists():
     return Response("Could not retrieve artist info: " + r.text, 402)
 
   artistData = r.json()['artists']
-  artist_URLs = [d['images'][1]['url'] for d in artistData]
+  artist_URLs = ["" if len(d['images']) < 2 else d['images'][1]['url'] for d in artistData]
 
   for i, k in enumerate(keys):
     result[k]['image_url'] = artist_URLs[i]
