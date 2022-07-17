@@ -23844,8 +23844,15 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
         setButtonTitle("Loading . . .");
         setUploadState(FILES_UPLOADING);
         uploadFiles(files).then(() => {
-          setButtonTitle("Done! Let's check your history >");
-          setUploadState(FILES_UPLOADED);
+          setButtonTitle("Processing...");
+          return fetch(`${BACKEND_URL}/process-data`, { method: "POST" });
+        }).then((response) => response.json()).then((result) => {
+          if (result.success) {
+            setButtonTitle("Done! Let's check your history >");
+            setUploadState(FILES_UPLOADED);
+          } else {
+            throw "Did not get a response back";
+          }
         }).catch(() => {
           setButtonTitle("Server is probably offline :(");
           setUploadState(FILES_DROPPED);
