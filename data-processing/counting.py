@@ -6,6 +6,9 @@ from glob import glob
 # Necessary functions
 from os import listdir
 
+#temporary timing checks
+from time import time
+
 keep_cols = [
   'username', 'count', 'play-date', 'track_uri', 'song', 'artist', 'album', 
 ]
@@ -56,8 +59,6 @@ def create_dataframe():
   pandas_df = all_spotify_df
   return all_spotify_df
 
-def INSPECT_pandas_df():
-  return pandas_df if pandas_df is None else pandas_df.to_dict()
 
 """
 build_daily_song_map:
@@ -66,6 +67,7 @@ build_daily_song_map:
   over the entire duration of the user's Spotify history.
 """
 def build_daily_song_map(df):
+  start = time()
   print("\n! build_daily_song_map() !\n")
   if df is None:
     return
@@ -78,6 +80,7 @@ def build_daily_song_map(df):
   result = g.loc[g.groupby(["play-date"]).idxmax()['count']]
   result.set_index("play-date", inplace=True)
   result["track_uri"] = result["track_uri"].map(lambda x: x.split(":")[-1])
+  print("SONG BUILD:", '%.2f' % (time() - start))
   return result
 
 """
@@ -87,6 +90,7 @@ build_daily_artist_map:
   over the entire duration of the user's Spotify history.
 """
 def build_daily_artist_map(df):
+  start = time()
   print("\n! build_daily_artist_map() !\n")
   if df is None:
     return
@@ -97,6 +101,7 @@ def build_daily_artist_map(df):
   result = g.loc[g.groupby(["play-date"]).idxmax()['count']]
   result.set_index('play-date', inplace=True)
   result["track_uri"] = result["track_uri"].map(lambda x: x.split(":")[-1])
+  print("ARTIST BUILD:", '%.2f' % (time() - start))
   return result
 
 
@@ -175,3 +180,15 @@ def get_start_date():
 
   if main_df['songs'] is not None:
     return main_df['songs'].iloc[0].name
+
+
+"""
+build_maps:
+Creates the daily song and daily artist maps and stores them in global variables.
+"""
+def build_maps():
+  df = create_dataframe()
+  main_df['songs'] = build_daily_song_map(df)
+  main_df['artist'] = build_daily_artist_map(df)
+  return (df is not None) and (main_df['songs'] is not None) and (main_df['songs'] is not None)
+

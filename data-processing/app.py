@@ -4,7 +4,7 @@ from sys import exit
 from flask import Flask, request, Response
 from flask_cors import CORS
 import json
-from counting import find_daily_songs, find_daily_artists, check_files_present, get_start_date, build_maps
+from counting import find_daily_songs, find_daily_artists, check_files_present, get_start_date
 import requests
 
 # Global variables
@@ -157,13 +157,6 @@ def upload_file():
   f.write(request.data.decode('utf-8'))
   f.close()
   return "File successfully uploaded!"
-
-
-@app.route("/process-data", methods=['POST'])
-def process_data():
-  result = build_maps()
-  return {'success': True} if result else Response("Something went wrong", 402)
-
 
 
 app.run(debug=True, use_debugger=False, use_reloader=False)

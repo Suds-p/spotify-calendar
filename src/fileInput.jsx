@@ -40,17 +40,8 @@ export default function FileInput(props) {
       // TODO: add extra step that says "Processing" on button
       // TODO: add extra step that calls backend to create dataframes
       .then(() => {
-        setButtonTitle("Processing...");
-        return fetch(`${BACKEND_URL}/process-data`, { method: 'POST' });
-      })
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.success) {
-          setButtonTitle("Done! Let's check your history >");
-          setUploadState(FILES_UPLOADED);
-        } else {
-          throw 'Did not get a response back';
-        }
+        setButtonTitle("Done! Let's check your history >");
+        setUploadState(FILES_UPLOADED);
       })
       .catch(() => {
         setButtonTitle("Server is probably offline :(");
