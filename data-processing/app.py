@@ -109,10 +109,17 @@ def get_artists():
   result = json.loads(result)
   keys = list(result.keys())
   track_URIs = [result[k]["track_uri"] for k in keys]
-  print(track_URIs)
+  
+  # TODO: paginate requests for 50 IDs each, instead of all at once
   r = requests.get(
     f"https://api.spotify.com/v1/tracks?ids={','.join(track_URIs)}",
     headers={'Authorization': 'Bearer ' + TOKEN})
+  
+  # Hit API rate limit
+  if r.status_code == 429:
+    retry_time = 10 if r.headers['Retry-After'] == None else int(r.headers['Retry-After'])
+    time.sleep(retry_time)
+  
   if r.status_code >= 400:
     if "access token" in r.text:
       TOKEN = refresh_token()
@@ -124,6 +131,7 @@ def get_artists():
 
   songData = r.json()['tracks']
   artist_IDs = [d['album']['artists'][0]['id'] for d in songData]
+  print(artist_IDs)
 
   r = requests.get(
     f"https://api.spotify.com/v1/artists?ids={','.join(artist_IDs)}",
@@ -132,6 +140,7 @@ def get_artists():
     return Response("Could not retrieve artist info: " + r.text, 402)
 
   artistData = r.json()['artists']
+  # TODO: Don't need to pull URL from 2nd image, pull from 1st instead
   artist_URLs = ["" if len(d['images']) < 2 else d['images'][1]['url'] for d in artistData]
 
   for i, k in enumerate(keys):
@@ -151,8 +160,8 @@ def start_date():
 @app.route("/data-file", methods=['POST'])
 def upload_file():
   filename = request.args.get("filename", default="", type=str)
-  if filename == "":
-    return Response("No data detected. Please send a file to upload.", 401)
+  if filename == "" or request.data == None or len(request.data) == 0:
+    return Response("No data detected. Please send a file to upload.", 400)
   f = open(DATA_PATH + filename, 'w')
   f.write(request.data.decode('utf-8'))
   f.close()
