@@ -54,7 +54,7 @@ def create_dataframe():
     "master_metadata_album_album_name": "album",
     "spotify_track_uri": "track_uri",
   }, inplace=True)
-  all_spotify_df.drop(all_spotify_df.columns.difference(keep_cols), 1, inplace=True)
+  all_spotify_df.drop(all_spotify_df.columns.difference(keep_cols), axis=1, inplace=True)
   
   pandas_df = all_spotify_df
   return all_spotify_df
@@ -72,10 +72,10 @@ def build_daily_song_map(df):
   if df is None:
     return
   g = df.groupby(["play-date", "song"]).agg(
-    album=pd.NamedAgg(column="album", aggfunc=max),
-    artist=pd.NamedAgg(column="artist", aggfunc=max),
-    track_uri=pd.NamedAgg(column="track_uri", aggfunc=max),
-    count=pd.NamedAgg(column="count", aggfunc=sum))
+    album=pd.NamedAgg(column="album", aggfunc="max"),
+    artist=pd.NamedAgg(column="artist", aggfunc="max"),
+    track_uri=pd.NamedAgg(column="track_uri", aggfunc="max"),
+    count=pd.NamedAgg(column="count", aggfunc="sum"))
   g.reset_index(inplace=True)
   result = g.loc[g.groupby(["play-date"]).idxmax()['count']]
   result.set_index("play-date", inplace=True)
@@ -95,8 +95,8 @@ def build_daily_artist_map(df):
   if df is None:
     return
   g = df.groupby(["play-date", "artist"]).agg(
-    track_uri=pd.NamedAgg(column="track_uri", aggfunc=max),
-    count=pd.NamedAgg(column="count", aggfunc=sum))
+    track_uri=pd.NamedAgg(column="track_uri", aggfunc="max"),
+    count=pd.NamedAgg(column="count", aggfunc="sum"))
   g = g.reset_index()
   result = g.loc[g.groupby(["play-date"]).idxmax()['count']]
   result.set_index('play-date', inplace=True)
