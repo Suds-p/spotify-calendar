@@ -9,16 +9,18 @@ from os import listdir
 #temporary timing checks
 from time import time
 
-keep_cols = [
-  'username', 'count', 'play-date', 'track_uri', 'song', 'artist', 'album', 
-]
+TIMEZONE = "America/New_York"
+keep_columns = ["artist", "album", "count", "ms_played", "play-date", "Play-Time", "track_uri", "track"]
 # Transforms datetime info into just date info
 extract_date = lambda x: str(x).split()[0]
 # Dataframe made from JSON files
 pandas_df = None
+artist_df = None
+album_df = None
+track_df = None
 # Dataframes for specific modes
 main_df = {
-  "songs": None,
+  "tracks": None,
   "artists": None
 }
 
@@ -29,7 +31,7 @@ create_dataframe:
 """
 def create_dataframe():
   print("\n! create_dataframe() !\n")
-  global pandas_df
+  global pandas_df, album_df, artist_df, track_df
   if pandas_df is not None:
     return pandas_df
   
@@ -40,21 +42,56 @@ def create_dataframe():
   
   if data_paths == []:
     return
-
-  print("attempting to read json")
+  
+  # Concatenate all JSON files into dataframe
   dfs = [pd.read_json(path) for path in data_paths]
-  print("successfully read json")
   all_spotify_df = pd.concat(dfs, ignore_index=True)
+  # Localize datetime values
   all_spotify_df["Play-Time"] = pd.to_datetime(all_spotify_df["ts"])
-  all_spotify_df['play-date'] = all_spotify_df['Play-Time'].apply(extract_date)
-  all_spotify_df['count'] = 1
+  all_spotify_df["Play-Time"] = all_spotify_df["Play-Time"].dt.tz_convert(TIMEZONE)
+  all_spotify_df["play-date"] = all_spotify_df["Play-Time"].apply(extract_date)
+  all_spotify_df["count"] = 1
   all_spotify_df.rename(columns={
-    "master_metadata_track_name": "song",
+    "master_metadata_track_name": "track",
     "master_metadata_album_artist_name": "artist",
     "master_metadata_album_album_name": "album",
     "spotify_track_uri": "track_uri",
   }, inplace=True)
-  all_spotify_df.drop(all_spotify_df.columns.difference(keep_cols), axis=1, inplace=True)
+  all_spotify_df.drop(all_spotify_df.columns.difference(keep_columns), axis=1, inplace=True)
+  
+  # Rename columns and extract date/time values into columns
+  all_spotify_df["year"] = pd.DatetimeIndex(all_spotify_df["Play-Time"]).year
+  all_spotify_df["month"] = pd.DatetimeIndex(all_spotify_df["Play-Time"]).month
+  all_spotify_df["day"] = pd.DatetimeIndex(all_spotify_df["Play-Time"]).day
+  all_spotify_df["weekday"] = pd.DatetimeIndex(all_spotify_df["Play-Time"]).weekday
+  all_spotify_df["time"] = pd.DatetimeIndex(all_spotify_df["Play-Time"]).time
+  all_spotify_df["hour"] = pd.DatetimeIndex(all_spotify_df["Play-Time"]).hour
+  all_spotify_df["day-name"] = all_spotify_df["Play-Time"].apply(call_m("day_name"))
+  all_spotify_df["track_uri"] = all_spotify_df["track_uri"].str.split(":", expand=True)[2]
+  all_spotify_df.drop(columns=["Play-Time"], inplace=True)
+  
+  # Remove any potential podcast rows
+  all_spotify_df.dropna(subset=["artist", "album", "track"], inplace=True)
+  
+  # Make index dataframes for artist, album, and track to avoid duplicates
+  artist_df = all_spotify_df[["artist"]].drop_duplicates().reset_index(drop=True)
+  album_df = all_spotify_df[["album"]].drop_duplicates().reset_index(drop=True)
+  track_df = all_spotify_df[["track", "track_uri"]].drop_duplicates().reset_index(drop=True)
+  
+  # Add index columns for merging; update types to reduce space
+  artist_df["artist_id"] = artist_df.index.astype("uint16")
+  album_df["album_id"] = album_df.index.astype("uint16")
+  track_df["track_id"] = track_df.index.astype("uint16")
+  
+  assert not artist_df["artist"].isna().any()
+  assert not album_df["album"].isna().any()
+  assert not track_df["track"].isna().any()
+  
+  # Replace artist, album, track in dataframe with their indexes
+  all_spotify_df = all_spotify_df.merge(artist_df, on="artist", how="left")
+  all_spotify_df = all_spotify_df.merge(album_df, on="album", how="left")
+  all_spotify_df = all_spotify_df.merge(track_df, on="track_uri", how="left", suffixes=(None, "_copy"))
+  all_spotify_df.drop(columns=["artist", "album", "track", "track_copy"], inplace=True)
   
   pandas_df = all_spotify_df
   return all_spotify_df
@@ -71,16 +108,24 @@ def build_daily_song_map(df):
   print("\n! build_daily_song_map() !\n")
   if df is None:
     return
-  g = df.groupby(["play-date", "song"]).agg(
-    album=pd.NamedAgg(column="album", aggfunc="max"),
-    artist=pd.NamedAgg(column="artist", aggfunc="max"),
-    track_uri=pd.NamedAgg(column="track_uri", aggfunc="max"),
+  
+  g = df.groupby(["play-date", "track_uri"]).agg(
+    album_id=pd.NamedAgg(column="album_id", aggfunc="max"),
+    artist_id=pd.NamedAgg(column="artist_id", aggfunc="max"),
+    track_id=pd.NamedAgg(column="track_id", aggfunc="max"),
     count=pd.NamedAgg(column="count", aggfunc="sum"))
   g.reset_index(inplace=True)
-  result = g.loc[g.groupby(["play-date"]).idxmax()['count']]
+  # Only keep rows with the max 'count' value for that day
+  result = g.loc[g.groupby(["play-date"]).idxmax()["count"]]
+  # Sub in names from other tables
+  result = result.merge(album_df, on="album_id", how="left").drop(columns=["album_id"])
+  result = result.merge(artist_df, on="artist_id", how="left").drop(columns=["artist_id"])
+  result = result.merge(track_df, on=["track_id", "track_uri"], how="left").drop(columns=["track_id"])
   result.set_index("play-date", inplace=True)
-  result["track_uri"] = result["track_uri"].map(lambda x: x.split(":")[-1])
-  print("SONG BUILD:", '%.2f' % (time() - start))
+  
+  print(result.head(20))
+  
+  print("SONG BUILD:", "%.2f" % (time() - start))
   return result
 
 """
@@ -94,67 +139,66 @@ def build_daily_artist_map(df):
   print("\n! build_daily_artist_map() !\n")
   if df is None:
     return
-  g = df.groupby(["play-date", "artist"]).agg(
+  
+  g = df.groupby(["play-date", "artist_id"]).agg(
     track_uri=pd.NamedAgg(column="track_uri", aggfunc="max"),
     count=pd.NamedAgg(column="count", aggfunc="sum"))
-  g = g.reset_index()
-  result = g.loc[g.groupby(["play-date"]).idxmax()['count']]
-  result.set_index('play-date', inplace=True)
-  result["track_uri"] = result["track_uri"].map(lambda x: x.split(":")[-1])
-  print("ARTIST BUILD:", '%.2f' % (time() - start))
+  g.reset_index(inplace=True)
+  # Only keep rows with the max 'count' value for that day
+  result = g.loc[g.groupby(["play-date"]).idxmax()["count"]]
+  # Sub in names from other tables
+  result = result.merge(artist_df, on="artist_id", how="left").drop(columns=["artist_id"])
+  result.set_index("play-date", inplace=True)
+  
+  print("ARTIST BUILD:", "%.2f" % (time() - start))
   return result
 
 
 """
 get_today_date_string:
   (internal function)
-  Returns today's date as a string in the format 'YYYY-mm-dd'.
+  Returns today"s date as a string in the format "YYYY-mm-dd".
 """
 def get_today_date_string():
-  return datetime.today().strftime('%Y-%m-%d')
+  return datetime.today().strftime("%Y-%m-%d")
 
 
 """
-find_daily_songs:
+get_top_songs_in_range:
   Returns a JSON map of dates to most listened songs on those dates
   for the duration of a specific range of the user's history.
   If end_date is an empty string, it defaults to today's date.
 """
-def find_daily_songs(start_date, end_date):
-  print("\n! find_daily_songs() !\n")
-  global main_df
-  if main_df['songs'] is None:
-    main_df['songs'] = build_daily_song_map(create_dataframe())
-  
-  if main_df['songs'] is not None:
-    end_date = get_today_date_string() if end_date == "" else end_date
-    return main_df['songs'][
-      (start_date <= main_df['songs'].index) & (main_df['songs'].index <= end_date)
-    ].to_json(orient="index")
+def get_top_songs_in_range(start_date, end_date):
+  return get_top_names_in_range(start_date, end_date, "tracks")
 
 
 """
-find_daily_artists:
+get_top_artists_in_range:
   Returns a JSON map of dates to most listened songs on those dates
   for the duration of a specific range of the user's history.
   If end_date is an empty string, it defaults to today's date.
 """
-def find_daily_artists(start_date, end_date):
-  print("\n! find_daily_artists() !\n")
+def get_top_artists_in_range(start_date, end_date):
+  return get_top_names_in_range(start_date, end_date, "artists")
+
+
+"""
+get_top_names_in_range:
+(Internal function)
+Returns either top tracks or artists in date range.
+"""
+def get_top_names_in_range(start_date, end_date, key):
   global main_df
-  if main_df['artists'] is None:
-    main_df['artists'] = build_daily_artist_map(create_dataframe())
+  if main_df[key] is None:
+    build_maps()
   
-  if main_df['artists'] is not None:
-    end_date = get_today_date_string() if end_date == "" else end_date
-    return main_df['artists'][
-        (start_date <= main_df['artists'].index) & (main_df['artists'].index <= end_date)
-      ]\
-      .to_json(orient="index")
-      # .drop(columns=["username", "song", "album"])\
-      
-      
-      
+  end_date = get_today_date_string() if end_date == "" else end_date
+  ret = main_df[key][
+    (start_date <= main_df[key].index) & (main_df[key].index <= end_date)
+  ]
+  
+  return ret.to_json(orient="index")
 
 
 """
@@ -169,26 +213,23 @@ def check_files_present():
 
 """
 get_start_date:
-Returns first date in user's listening history as a string.
-String is returned in "yyyy-mm-dd" format.
-If history not available, returns None.
+Returns first date in user's listening history in "yyyy-mm-dd" format.
+Returns None if no history is available.
 """
 def get_start_date():
   global main_df
-  if main_df['songs'] is None:
-    main_df['songs'] = build_daily_song_map(create_dataframe())
-
-  if main_df['songs'] is not None:
-    return main_df['songs'].iloc[0].name
+  if main_df["tracks"] is None:
+    main_df["tracks"] = build_daily_song_map(df)
+  
+  return main_df["tracks"].iloc[0].name
 
 
 """
 build_maps:
-Creates the daily song and daily artist maps and stores them in global variables.
+Creates the daily song and artist maps and stores them in global variables.
 """
 def build_maps():
   df = create_dataframe()
-  main_df['songs'] = build_daily_song_map(df)
-  main_df['artist'] = build_daily_artist_map(df)
-  return (df is not None) and (main_df['songs'] is not None) and (main_df['songs'] is not None)
-
+  main_df["tracks"] = build_daily_song_map(df)
+  main_df["artists"] = build_daily_artist_map(df)
+  return (df is not None) and (main_df["tracks"] is not None) and (main_df["artists"] is not None)

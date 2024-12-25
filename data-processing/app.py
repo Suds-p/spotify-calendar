@@ -4,7 +4,7 @@ from sys import exit
 from flask import Flask, request, Response
 from flask_cors import CORS
 import json
-from counting import find_daily_songs, find_daily_artists, check_files_present, get_start_date
+from counting import get_top_songs_in_range, get_top_artists_in_range, check_files_present, get_start_date
 import requests
 
 # Global variables
@@ -54,7 +54,7 @@ def get_tracks():
     return Response(f"Start comes after end date ({start}, {end})", 400)
   
   end = "" if end == "2001-01-01" else end
-  result = find_daily_songs(start, end)
+  result = get_top_songs_in_range(start, end)
   if not result:
     return Response("Could not generate song table", 401)
 
@@ -68,6 +68,7 @@ def get_tracks():
     return result
 
   # Attempt to get tracks, or refresh token if necessary
+  # TODO: paginate requests so it uses 50 IDs at a time, not all at once
   r = requests.get(
     f"https://api.spotify.com/v1/tracks?ids={','.join(track_URIs)}",
     headers={'Authorization': 'Bearer ' + TOKEN})
@@ -101,7 +102,7 @@ def get_artists():
     return Response(f"Start comes after end date ({start}, {end})", 400)
   
   end = "" if end == "2001-01-01" else end
-  result = find_daily_artists(start, end)
+  result = get_top_artists_in_range(start, end)
   if not result:
     return Response("Could not generate artist table", 401)
 
@@ -110,29 +111,33 @@ def get_artists():
   keys = list(result.keys())
   track_URIs = [result[k]["track_uri"] for k in keys]
   
+  print(track_URIs)
+  
   # TODO: paginate requests for 50 IDs each, instead of all at once
-  r = requests.get(
-    f"https://api.spotify.com/v1/tracks?ids={','.join(track_URIs)}",
-    headers={'Authorization': 'Bearer ' + TOKEN})
-  
-  # Hit API rate limit
-  if r.status_code == 429:
-    retry_time = 10 if r.headers['Retry-After'] == None else int(r.headers['Retry-After'])
-    time.sleep(retry_time)
-  
-  if r.status_code >= 400:
-    if "access token" in r.text:
-      TOKEN = refresh_token()
-      r = requests.get(
-        f"https://api.spotify.com/v1/tracks?ids={','.join(track_URIs)}",
-        headers={'Authorization': 'Bearer ' + TOKEN})
-    else:
-      return Response("Could not retrieve track info: " + r.text, 402)
+  artist_IDs = []
+  for i in range(0, len(track_URIs), 50):
+    sub_track_URIs = track_URIs[i: i+50]
+    r = requests.get(
+      f"https://api.spotify.com/v1/tracks?ids={','.join(sub_track_URIs)}",
+      headers={'Authorization': 'Bearer ' + TOKEN})
+    
+    # Hit API rate limit
+    if r.status_code == 429:
+      retry_time = 10 if r.headers['Retry-After'] == None else int(r.headers['Retry-After'])
+      time.sleep(retry_time)
+    
+    if r.status_code >= 400:
+      if "access token" in r.text:
+        TOKEN = refresh_token()
+        r = requests.get(
+          f"https://api.spotify.com/v1/tracks?ids={','.join(sub_track_URIs)}",
+          headers={'Authorization': 'Bearer ' + TOKEN})
+      else:
+        return Response("Could not retrieve track info: " + r.text, 402)
 
-  songData = r.json()['tracks']
-  artist_IDs = [d['album']['artists'][0]['id'] for d in songData]
-  print(artist_IDs)
-
+    songData = r.json()['tracks']
+    artist_IDs.extend([d['album']['artists'][0]['id'] for d in songData])
+  
   r = requests.get(
     f"https://api.spotify.com/v1/artists?ids={','.join(artist_IDs)}",
     headers={'Authorization': 'Bearer ' + TOKEN})
@@ -168,4 +173,4 @@ def upload_file():
   return "File successfully uploaded!"
 
 
-app.run(debug=True, use_debugger=False, use_reloader=False)
+app.run(debug=True, use_debugger=False, use_reloader=True)
