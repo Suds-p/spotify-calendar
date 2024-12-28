@@ -32,6 +32,26 @@ def _spotify_get_track_artist_ID(json):
 def _spotify_get_artist_URL(json):
   return "" if len(json["images"]) < 2 else json["images"][1]["url"]
 
+def paginateRequest(idList, requestFn, updateFn, errorMsg):
+  global TOKEN
+  for i in range(0, len(idList), 50):
+    sublist_IDs = idList[i: i+50]
+    r = requestFn(sublist_IDs, TOKEN)
+    
+    # Hit API rate limit
+    if r.status_code == 429:
+      retry_time = 10 if r.headers["Retry-After"] == None else int(r.headers["Retry-After"])
+      time.sleep(retry_time)
+    
+    if r.status_code >= 400:
+      if "access token" in r.text:
+        TOKEN = spotifyService.refresh_token()
+        result = requestFn(sublist_IDs, TOKEN)
+      else:
+        return Response(errorMsg + ": " + r.text, 500)
+    
+    updateFn(r)
+
 @app.route("/tracks")
 def get_tracks():
   global TOKEN
@@ -48,9 +68,8 @@ def get_tracks():
   end = "" if end == "2001-01-01" else end
   result = get_top_songs_in_range(start, end)
   if not result:
-    return Response("Could not generate song table", 401)
-
-  # Add album image URLs from Spotify API
+    return Response("Could not generate song table", 500)
+  
   result = json.loads(result)
   # Keys are date strings
   keys = result.keys()
@@ -60,19 +79,12 @@ def get_tracks():
   if result == {}:
     return result
 
-  # Attempt to get tracks, or refresh token if necessary
+  # Add album image URLs from Spotify API
   album_URLs = {}
-  for i in range(0, len(track_URIs), 50):
-    sub_track_URIs = track_URIs[i: i+50]
-    r = spotifyService.get_multiple_tracks(sub_track_URIs, TOKEN)
-    if r.status_code >= 400:
-      if "access token" in r.text:
-        TOKEN = spotifyService.refresh_token()
-        r = spotifyService.get_multiple_tracks(sub_track_URIs, TOKEN)
-      else:
-        return Response("Could not retrieve track info: " + r.text, 402)
-    tracksData = r.json()["tracks"]
+  def albumUpdateFn(result):
+    tracksData = result.json()["tracks"]
     album_URLs.update({_spotify_get_item_ID(d): _spotify_get_album_URL(d) for d in tracksData})
+  paginateRequest(track_URIs, spotifyService.get_multiple_tracks, albumUpdateFn, "Could not retrieve track info")
   
   for k in keys:
     result[k]["image_url"] = album_URLs[result[k][TRACK_URI]]
@@ -95,42 +107,27 @@ def get_artists():
   end = "" if end == "2001-01-01" else end
   result = get_top_artists_in_range(start, end)
   if not result:
-    return Response("Could not generate artist table", 401)
+    return Response("Could not generate artist table", 500)
 
   # Add artist image URLs from Spotify API
   result = json.loads(result)
   keys = list(result.keys())
   track_URIs = list(set([result[k][TRACK_URI] for k in keys]))
+  track_to_artist_ID = {}
+  def trackUpdateFn(result):
+    tracksData = result.json()["tracks"]
+    track_to_artist_ID.update({_spotify_get_item_ID(d): _spotify_get_track_artist_ID(d) for d in tracksData})
+  paginateRequest(track_URIs, spotifyService.get_multiple_tracks, trackUpdateFn, "Could not retrieve track info")
   
-  artist_IDs = {}
-  for i in range(0, len(track_URIs), 50):
-    sub_track_URIs = track_URIs[i: i+50]
-    r = spotifyService.get_multiple_tracks(sub_track_URIs, TOKEN)
-    
-    # Hit API rate limit
-    if r.status_code == 429:
-      retry_time = 10 if r.headers["Retry-After"] == None else int(r.headers["Retry-After"])
-      time.sleep(retry_time)
-    
-    if r.status_code >= 400:
-      if "access token" in r.text:
-        TOKEN = spotifyService.refresh_token()
-        r = spotifyService.get_multiple_tracks(sub_track_URIs, TOKEN)
-      else:
-        return Response("Could not retrieve track info: " + r.text, 402)
-
-    tracksData = r.json()["tracks"]
-    artist_IDs.update({_spotify_get_item_ID(d): _spotify_get_track_artist_ID(d) for d in tracksData})
-  
-  r = spotifyService.get_multiple_artists(list(artist_IDs.values()), TOKEN)
-  if r.status_code >= 400:
-    return Response("Could not retrieve artist info: " + r.text, 402)
-
-  artistsData = r.json()["artists"]
-  artist_URLs = {_spotify_get_item_ID(d): _spotify_get_artist_URL(d) for d in artistsData}
+  artist_IDs = list(track_to_artist_ID.values())
+  artist_URLs = {}
+  def artistUpdateFn(result):
+    artistsData = result.json()["artists"]
+    artist_URLs.update({_spotify_get_item_ID(d): _spotify_get_artist_URL(d) for d in artistsData})
+  paginateRequest(artist_IDs, spotifyService.get_multiple_artists, artistUpdateFn, "Could not retrieve artist info")
 
   for k in keys:
-    result[k]["image_url"] = artist_URLs[artist_IDs[result[k][TRACK_URI]]]
+    result[k]["image_url"] = artist_URLs[track_to_artist_ID[result[k][TRACK_URI]]]
 
   return result
 
