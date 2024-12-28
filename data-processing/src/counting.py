@@ -211,7 +211,7 @@ and False otherwise.
 """
 def check_files_present():
   print("\n! check_files_present() !\n")
-  return len(glob("./data/*")) > 0
+  return len(glob(DATA_PATH + "*")) > 0
 
 
 """
