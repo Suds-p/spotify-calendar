@@ -1,12 +1,11 @@
 from re import match
-from base64 import b64encode
 from sys import exit
 from flask import Flask, request, Response
 from flask_cors import CORS
 import json
 from counting import get_top_songs_in_range, get_top_artists_in_range, check_files_present, get_start_date
-import requests
 from constants import *
+import spotifyService
 
 # Global variables
 DATE_REGEX = r"^(20)\d\d-(0[1-9]|1[012])-\d\d" # Pattern for dates from user
@@ -14,38 +13,24 @@ TOKEN = "" # User access token to access the Spotify Web API
 DATA_PATH = "data/" # Path where data files are stored
 
 ########### Get user access token #############
-# Read in client secrets
-f = open(".secrets", "r")
-C_ID, C_SECRET = [line.split()[1] for line in f.read().split('\n')]
-f.close()
-
-secrets = bytes("Basic ", "ascii") + b64encode(bytes(f"{C_ID}:{C_SECRET}", "ascii"))
-
-def refresh_token():
-  r = requests.post(
-    "https://accounts.spotify.com/api/token",
-    {"grant_type": "client_credentials"},
-    headers={"Authorization": secrets})
-  if r.status_code >= 400:
-    print("Could not communicate with Spotify: " + r.text)
-    exit(0)
-
-  return r.json()["access_token"]
-
-
-TOKEN = refresh_token()
+TOKEN = spotifyService.refresh_token()
 
 ########### Set up API endpoints to backend #############
-
 # Listening on port 5000
 app = Flask(__name__)
 CORS(app, resources={"/*": {"origins": "*"}})
 
-def _spotify_get_track_URI(json):
+def _spotify_get_item_ID(json):
   return json["id"]
 
 def _spotify_get_album_URL(json):
   return json["album"]["images"][1]["url"]
+
+def _spotify_get_track_artist_ID(json):
+  return json["album"]["artists"][0]["id"]
+
+def _spotify_get_artist_URL(json):
+  return "" if len(json["images"]) < 2 else json["images"][1]["url"]
 
 @app.route("/tracks")
 def get_tracks():
@@ -70,8 +55,7 @@ def get_tracks():
   # Keys are date strings
   keys = result.keys()
   # Extract track URIs to get image information
-  track_URIs = [result[k][TRACK_URI] for k in keys]
-  print(track_URIs)
+  track_URIs = list(set([result[k][TRACK_URI] for k in keys]))
 
   if result == {}:
     return result
@@ -80,21 +64,17 @@ def get_tracks():
   album_URLs = {}
   for i in range(0, len(track_URIs), 50):
     sub_track_URIs = track_URIs[i: i+50]
-    r = requests.get(
-      f"https://api.spotify.com/v1/tracks?ids={','.join(sub_track_URIs)}",
-      headers={"Authorization": "Bearer " + TOKEN})
+    r = spotifyService.get_multiple_tracks(sub_track_URIs, TOKEN)
     if r.status_code >= 400:
       if "access token" in r.text:
-        TOKEN = refresh_token()
-        r = requests.get(
-          f"https://api.spotify.com/v1/tracks?ids={','.join(sub_track_URIs)}",
-          headers={"Authorization": "Bearer " + TOKEN})
+        TOKEN = spotifyService.refresh_token()
+        r = spotifyService.get_multiple_tracks(sub_track_URIs, TOKEN)
       else:
         return Response("Could not retrieve track info: " + r.text, 402)
-
     tracksData = r.json()["tracks"]
-    album_URLs.update({_spotify_get_track_URI(d): _spotify_get_album_URL(d) for d in tracksData})
-  for i, k in enumerate(keys):
+    album_URLs.update({_spotify_get_item_ID(d): _spotify_get_album_URL(d) for d in tracksData})
+  
+  for k in keys:
     result[k]["image_url"] = album_URLs[result[k][TRACK_URI]]
 
   return result
@@ -120,17 +100,12 @@ def get_artists():
   # Add artist image URLs from Spotify API
   result = json.loads(result)
   keys = list(result.keys())
-  track_URIs = [result[k][TRACK_URI] for k in keys]
+  track_URIs = list(set([result[k][TRACK_URI] for k in keys]))
   
-  print(track_URIs)
-  
-  # TODO: paginate requests for 50 IDs each, instead of all at once
-  artist_IDs = []
+  artist_IDs = {}
   for i in range(0, len(track_URIs), 50):
     sub_track_URIs = track_URIs[i: i+50]
-    r = requests.get(
-      f"https://api.spotify.com/v1/tracks?ids={','.join(sub_track_URIs)}",
-      headers={"Authorization": "Bearer " + TOKEN})
+    r = spotifyService.get_multiple_tracks(sub_track_URIs, TOKEN)
     
     # Hit API rate limit
     if r.status_code == 429:
@@ -139,28 +114,23 @@ def get_artists():
     
     if r.status_code >= 400:
       if "access token" in r.text:
-        TOKEN = refresh_token()
-        r = requests.get(
-          f"https://api.spotify.com/v1/tracks?ids={','.join(sub_track_URIs)}",
-          headers={"Authorization": "Bearer " + TOKEN})
+        TOKEN = spotifyService.refresh_token()
+        r = spotifyService.get_multiple_tracks(sub_track_URIs, TOKEN)
       else:
         return Response("Could not retrieve track info: " + r.text, 402)
 
-    songData = r.json()["tracks"]
-    artist_IDs.extend([d["album"]["artists"][0]["id"] for d in songData])
+    tracksData = r.json()["tracks"]
+    artist_IDs.update({_spotify_get_item_ID(d): _spotify_get_track_artist_ID(d) for d in tracksData})
   
-  r = requests.get(
-    f"https://api.spotify.com/v1/artists?ids={','.join(artist_IDs)}",
-    headers={"Authorization": "Bearer " + TOKEN})
+  r = spotifyService.get_multiple_artists(list(artist_IDs.values()), TOKEN)
   if r.status_code >= 400:
     return Response("Could not retrieve artist info: " + r.text, 402)
 
-  artistData = r.json()["artists"]
-  # TODO: Don't need to pull URL from 2nd image, pull from 1st instead
-  artist_URLs = ["" if len(d["images"]) < 2 else d["images"][1]["url"] for d in artistData]
+  artistsData = r.json()["artists"]
+  artist_URLs = {_spotify_get_item_ID(d): _spotify_get_artist_URL(d) for d in artistsData}
 
-  for i, k in enumerate(keys):
-    result[k]["image_url"] = artist_URLs[i]
+  for k in keys:
+    result[k]["image_url"] = artist_URLs[artist_IDs[result[k][TRACK_URI]]]
 
   return result
 
