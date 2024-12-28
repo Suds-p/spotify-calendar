@@ -100,8 +100,10 @@ def create_dataframe():
 """
 build_daily_song_map:
   (internal function)
-  Create the main dataframe of most listened songs
-  over the entire duration of the user's Spotify history.
+  Returns dataframe of most listened songs over the user's entire Spotify history.
+  
+  Index: play-date
+  Columns: album, artist, track, track_uri, count
 """
 def build_daily_song_map(df):
   start = time()
@@ -131,8 +133,10 @@ def build_daily_song_map(df):
 """
 build_daily_artist_map:
   (internal function)
-  Create the main dataframe of most listened artists
-  over the entire duration of the user's Spotify history.
+  Returns dataframe of most listened artists over the user's Spotify history.
+  
+  Index: play-date
+  Columns: artist, track_uri, count
 """
 def build_daily_artist_map(df):
   start = time()
