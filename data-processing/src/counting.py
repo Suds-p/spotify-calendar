@@ -3,6 +3,7 @@ import numpy as np
 from datetime import datetime
 from operator import methodcaller as call_m
 from glob import glob
+from constants import DATA_PATH
 # Necessary functions
 from os import listdir
 
@@ -36,7 +37,7 @@ def create_dataframe():
     return pandas_df
   
   try:
-    data_paths = [("data/" + d) for d in listdir("./data") if ".json" in d]
+    data_paths = [(DATA_PATH + d) for d in listdir(DATA_PATH) if ".json" in d]
   except FileNotFoundError:
     return
   
@@ -124,8 +125,6 @@ def build_daily_song_map(df):
   result = result.merge(artist_df, on="artist_id", how="left").drop(columns=["artist_id"])
   result = result.merge(track_df, on=["track_id", "track_uri"], how="left").drop(columns=["track_id"])
   result.set_index("play-date", inplace=True)
-  
-  print(result.head(20))
   
   print("SONG BUILD:", "%.2f" % (time() - start))
   return result

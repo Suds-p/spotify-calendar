@@ -1,16 +1,16 @@
 from re import match
 from sys import exit
-from flask import Flask, request, Response
+from flask import Flask, request, Response, abort
 from flask_cors import CORS
 import json
 from counting import get_top_songs_in_range, get_top_artists_in_range, check_files_present, get_start_date
 from constants import *
 import spotifyService
+from werkzeug.exceptions import BadRequest, InternalServerError
 
 # Global variables
 DATE_REGEX = r"^(20)\d\d-(0[1-9]|1[012])-\d\d" # Pattern for dates from user
 TOKEN = "" # User access token to access the Spotify Web API
-DATA_PATH = "data/" # Path where data files are stored
 
 ########### Get user access token #############
 TOKEN = spotifyService.refresh_token()
@@ -48,7 +48,7 @@ def paginateRequest(idList, requestFn, updateFn, errorMsg):
         TOKEN = spotifyService.refresh_token()
         result = requestFn(sublist_IDs, TOKEN)
       else:
-        return Response(errorMsg + ": " + r.text, 500)
+        raise InternalServerError(description=f"{errorMsg} + ': ' + {r.text}")
     
     updateFn(r)
 
@@ -60,15 +60,13 @@ def get_tracks():
   end = request.args.get(END, default="2001-01-01", type=str)
 
   # Ensure correct format and start comes before end date
-  if not match(DATE_REGEX, start) or not match(DATE_REGEX, end):
-    return Response(f"Dates have incorrect format ({start}, {end})", 400)
-  elif start > end:
-    return Response(f"Start comes after end date ({start}, {end})", 400)
+  assert match(DATE_REGEX, start) and match(DATE_REGEX, end), f"Dates should use YYYY-MM-DD format ({start}, {end})"
+  assert start <= end, f"Start comes after end date ({start}, {end})"
   
   end = "" if end == "2001-01-01" else end
   result = get_top_songs_in_range(start, end)
-  if not result:
-    return Response("Could not generate song table", 500)
+  
+  assert result, "Could not generate song table"
   
   result = json.loads(result)
   # Keys are date strings
@@ -99,15 +97,13 @@ def get_artists():
   end = request.args.get(END, default="2001-01-01", type=str)
 
   # Ensure correct format and start comes before end date
-  if not match(DATE_REGEX, start) or not match(DATE_REGEX, end):
-    return Response(f"Dates have incorrect format ({start}, {end})", 400)
-  elif start > end:
-    return Response(f"Start comes after end date ({start}, {end})", 400)
+  assert match(DATE_REGEX, start) and match(DATE_REGEX, end), f"Dates should use YYYY-MM-DD format ({start}, {end})"
+  assert start <= end, f"Start comes after end date ({start}, {end})"
   
   end = "" if end == "2001-01-01" else end
   result = get_top_artists_in_range(start, end)
-  if not result:
-    return Response("Could not generate artist table", 500)
+  
+  assert result, "Could not generate artist table"
 
   # Add artist image URLs from Spotify API
   result = json.loads(result)
@@ -149,6 +145,16 @@ def upload_file():
   f.write(request.data.decode("utf-8"))
   f.close()
   return "File successfully uploaded!"
+
+########### Error handling #############
+@app.errorhandler(AssertionError)
+def handle_assertion_error(e):
+  return str(e), 500
+
+@app.errorhandler(BadRequest)
+@app.errorhandler(InternalServerError)
+def handle_errors(e):
+  return json.dumps({"error": e.description}), e.code
 
 
 app.run(debug=True, use_debugger=False, use_reloader=True)

@@ -3,7 +3,7 @@ import requests
 
 
 # Read in client secrets
-f = open(".secrets", "r")
+f = open("../.secrets", "r")
 C_ID, C_SECRET = [line.split()[1] for line in f.read().split('\n')]
 f.close()
 
